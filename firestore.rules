@@ -37,16 +37,25 @@ service cloud.firestore {
              data.settings is map;
     }
 
-    // User-specific data collection: users/{userId}/data/{docId}
-    match /users/{userId}/data/{docId} {
-      allow get: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+    // User root document and subcollections under users/{userId}
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
       allow list: if isOwner(userId) && isValidId(userId);
-      allow create: if isOwner(userId) && isValidId(userId) && isValidId(docId)
-                    && isValidUserData(incoming());
-      allow update: if isOwner(userId) && isValidId(userId) && isValidId(docId)
-                    && isValidUserData(incoming())
-                    && incoming().userId == existing().userId;
-      allow delete: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+      allow create: if isOwner(userId) && isValidId(userId);
+      allow update: if isOwner(userId) && isValidId(userId);
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      // User-specific data collection: users/{userId}/data/{docId}
+      match /data/{docId} {
+        allow get: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+        allow list: if isOwner(userId) && isValidId(userId);
+        allow create: if isOwner(userId) && isValidId(userId) && isValidId(docId)
+                      && isValidUserData(incoming());
+        allow update: if isOwner(userId) && isValidId(userId) && isValidId(docId)
+                      && isValidUserData(incoming())
+                      && incoming().userId == existing().userId;
+        allow delete: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+      }
     }
 
     // Diagnostic connection test endpoint

@@ -51,6 +51,10 @@
     }
   },
   "firestore": {
+    "/users/{userId}": {
+      "schema": "UserData",
+      "description": "User financial root state document under users/{userId}"
+    },
     "/users/{userId}/data/{docId}": {
       "schema": "UserData",
       "description": "User specific data documents under users/{userId}/data collection path"

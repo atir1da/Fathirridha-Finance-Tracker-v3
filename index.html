@@ -88,6 +88,9 @@
         -webkit-overflow-scrolling: touch;
       }
     </style>
+
+    <!-- Custom Firebase Client Module (Initialized via environment variables) -->
+    <script type="module" src="/src/lib/firebase.ts"></script>
   </head>
   <body class="h-full bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased transition-colors duration-200">
     <!-- PURPLE SLIDE-OUT NAVIGATION DRAWER BACKDROP -->
@@ -417,6 +420,56 @@
 
           <!-- Zone 3: Manual Data Actions, Quick Transaction & Settings -->
           <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+            <!-- Google Sign-In Button (When signed out) -->
+            <button
+              id="header-google-signin-btn"
+              onclick="handleGoogleSignIn()"
+              title="Sign in with Google to sync data across all devices"
+              class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all shrink-0 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-2xs hover:border-indigo-400 dark:hover:border-indigo-500"
+            >
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <span class="hidden sm:inline font-medium text-[11px]">Sign In</span>
+            </button>
+
+            <!-- User Profile Avatar & Dropdown (When signed in) -->
+            <div id="header-user-profile-container" class="relative hidden">
+              <button
+                type="button"
+                onclick="toggleUserDropdown(event)"
+                class="flex items-center gap-1.5 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-hidden"
+              >
+                <img id="header-user-avatar" class="w-7 h-7 rounded-full object-cover border border-indigo-400" alt="Avatar" />
+                <div id="header-user-fallback-avatar" class="w-7 h-7 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center border border-indigo-400 hidden"></div>
+                <span id="header-user-name" class="hidden sm:inline text-xs font-semibold text-slate-800 dark:text-slate-100 max-w-[90px] truncate">User</span>
+              </button>
+              <!-- Dropdown -->
+              <div id="header-user-dropdown" class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl p-3 space-y-2 z-50 hidden">
+                <div class="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                  <img id="dropdown-user-avatar" class="w-8 h-8 rounded-full object-cover" alt="User avatar" />
+                  <div class="min-w-0">
+                    <p id="dropdown-user-name" class="text-xs font-bold text-slate-900 dark:text-white truncate">User</p>
+                    <p id="dropdown-user-email" class="text-[10px] text-slate-500 dark:text-slate-400 truncate">user@gmail.com</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-[10px] text-emerald-600 dark:text-emerald-400 font-medium py-1">
+                  <span>● Live Cloud Sync</span>
+                  <span class="text-slate-400 font-mono">Firestore</span>
+                </div>
+                <button
+                  type="button"
+                  onclick="handleGoogleSignOut(); closeUserDropdown();"
+                  class="w-full py-1.5 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg text-left px-2 font-medium transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+
             <!-- Manual Data & Backup Button -->
             <button
               id="manual-backup-btn"
@@ -2023,12 +2076,15 @@
           <div id="cloud-status-card" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 space-y-2.5">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">Local Storage Active</span>
+                <span id="cloud-modal-status-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span id="cloud-modal-status-title" class="font-bold text-slate-800 dark:text-slate-200 text-xs">Local Storage Active</span>
               </div>
-              <span id="cloud-modal-device-badge" class="px-2 py-0.5 rounded text-[10px] font-mono bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">Device ID: ...</span>
+              <div class="flex items-center gap-1.5">
+                <span id="cloud-modal-room-pill" class="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Path: users/{uid}/data</span>
+                <span id="cloud-modal-device-badge" class="px-2 py-0.5 rounded text-[10px] font-mono bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">Device ID: ...</span>
+              </div>
             </div>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">
+            <p id="cloud-modal-status-desc" class="text-[11px] text-slate-500 dark:text-slate-400">
               All accounts, transactions ledger, categories, and savings goals are stored privately in this browser. No external login is required.
             </p>
             <div class="pt-2 border-t border-slate-200/80 dark:border-slate-700/80 flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-500 dark:text-slate-400 font-mono">
@@ -2187,6 +2243,30 @@
                   type="text"
                   id="cfg-storageBucket"
                   placeholder="e.g. my-app.firebasestorage.app"
+                  class="w-full text-xs font-mono px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-indigo-500 outline-hidden"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Messaging Sender ID (messagingSenderId)
+                </label>
+                <input
+                  type="text"
+                  id="cfg-messagingSenderId"
+                  placeholder="e.g. 1234567890"
+                  class="w-full text-xs font-mono px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-indigo-500 outline-hidden"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  App ID (appId)
+                </label>
+                <input
+                  type="text"
+                  id="cfg-appId"
+                  placeholder="e.g. 1:1234567890:web:abcdef123"
                   class="w-full text-xs font-mono px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-indigo-500 outline-hidden"
                 />
               </div>
@@ -6702,7 +6782,13 @@
       // Google Sign-In Action
       async function handleGoogleSignIn() {
         if (!window.FirebaseEngine) {
-          showToast('Initializing Firebase engine... please try again in a moment.', 'info');
+          showToast('Initializing custom Firebase engine... please try again in a moment.', 'info');
+          return;
+        }
+
+        if (window.FirebaseEngine.isConfigured === false) {
+          showToast('Firebase credentials are not set. Please configure environment variables (VITE_FIREBASE_API_KEY, VITE_FIREBASE_PROJECT_ID) or open Cloud Sync settings.', 'error');
+          openCloudSyncModal();
           return;
         }
 
@@ -6806,18 +6892,24 @@
         }
       }
 
+      // Safe input value setter to guard against missing DOM elements
+      function setInputValueSafe(id, val) {
+        const el = document.getElementById(id);
+        if (el) el.value = val ?? '';
+      }
+
       function openCloudSyncModal() {
         const modal = document.getElementById('cloud-sync-modal');
         if (!modal) return;
 
-        // Populate config fields
+        // Populate config fields safely
         const cfg = window.FirebaseEngine?.defaultFirebaseConfig || {};
-        if (cfg.apiKey) document.getElementById('cfg-apiKey').value = cfg.apiKey;
-        if (cfg.projectId) document.getElementById('cfg-projectId').value = cfg.projectId;
-        if (cfg.authDomain) document.getElementById('cfg-authDomain').value = cfg.authDomain;
-        if (cfg.storageBucket) document.getElementById('cfg-storageBucket').value = cfg.storageBucket || '';
-        if (cfg.messagingSenderId) document.getElementById('cfg-messagingSenderId').value = cfg.messagingSenderId || '';
-        if (cfg.appId) document.getElementById('cfg-appId').value = cfg.appId || '';
+        setInputValueSafe('cfg-apiKey', cfg.apiKey);
+        setInputValueSafe('cfg-projectId', cfg.projectId);
+        setInputValueSafe('cfg-authDomain', cfg.authDomain);
+        setInputValueSafe('cfg-storageBucket', cfg.storageBucket);
+        setInputValueSafe('cfg-messagingSenderId', cfg.messagingSenderId);
+        setInputValueSafe('cfg-appId', cfg.appId);
 
         updateSyncUI(syncState);
         modal.classList.remove('hidden');
@@ -6843,10 +6935,57 @@
         });
       }
 
+      function autoDetectFirebaseConfig() {
+        const snippet = document.getElementById('firebase-config-snippet')?.value || '';
+        if (!snippet.trim()) {
+          showToast('Please paste your Firebase configuration snippet or JSON first.', 'info');
+          return;
+        }
+
+        const extract = (key) => {
+          const match = snippet.match(new RegExp(`${key}["']?\\s*:\\s*["'\`]([^"'\`]+)["'\`]`));
+          return match ? match[1].trim() : '';
+        };
+
+        const apiKey = extract('apiKey');
+        const projectId = extract('projectId');
+        const authDomain = extract('authDomain');
+        const storageBucket = extract('storageBucket');
+        const messagingSenderId = extract('messagingSenderId');
+        const appId = extract('appId');
+
+        setInputValueSafe('cfg-apiKey', apiKey);
+        setInputValueSafe('cfg-projectId', projectId);
+        setInputValueSafe('cfg-authDomain', authDomain);
+        setInputValueSafe('cfg-storageBucket', storageBucket);
+        setInputValueSafe('cfg-messagingSenderId', messagingSenderId);
+        setInputValueSafe('cfg-appId', appId);
+
+        if (apiKey && projectId) {
+          const newCfg = { apiKey, projectId, authDomain, storageBucket, messagingSenderId, appId };
+          localStorage.setItem(STORAGE_KEY_FIREBASE_CONFIG, JSON.stringify(newCfg));
+          if (window.FirebaseEngine && typeof window.FirebaseEngine.initFirebase === 'function') {
+            window.FirebaseEngine.initFirebase(newCfg);
+          }
+          showToast('Saved custom Firebase credentials and initialized Firebase!', 'success');
+        } else {
+          showToast('Could not extract apiKey or projectId. Please check the pasted snippet.', 'error');
+        }
+      }
+
       function clearSavedFirebaseConfig() {
-        if (!confirm('Clear stored Firebase credentials and return to default configuration?')) return;
+        if (!confirm('Clear stored custom Firebase credentials and revert to environment variables?')) return;
         localStorage.removeItem(STORAGE_KEY_FIREBASE_CONFIG);
-        showToast('Firebase configuration reset', 'info');
+        setInputValueSafe('cfg-apiKey', '');
+        setInputValueSafe('cfg-projectId', '');
+        setInputValueSafe('cfg-authDomain', '');
+        setInputValueSafe('cfg-storageBucket', '');
+        setInputValueSafe('cfg-messagingSenderId', '');
+        setInputValueSafe('cfg-appId', '');
+        if (window.FirebaseEngine && typeof window.FirebaseEngine.initFirebase === 'function') {
+          window.FirebaseEngine.initFirebase();
+        }
+        showToast('Cleared custom Firebase credentials. Reverted to environment variables.', 'info');
       }
 
       async function handleConnectFirebaseClick() {
@@ -6951,16 +7090,31 @@
       function initGoogleAuthAndSync() {
         getDeviceId();
 
+        // If FirebaseEngine is already ready on window
+        if (window.FirebaseEngine) {
+          setupAuthListener();
+          return;
+        }
+
         // Wait until FirebaseEngine is ready on window
+        let hasInitialized = false;
+        const onReady = () => {
+          if (hasInitialized) return;
+          hasInitialized = true;
+          clearInterval(checkEngineInterval);
+          setupAuthListener();
+        };
+
         const checkEngineInterval = setInterval(() => {
           if (window.FirebaseEngine) {
-            clearInterval(checkEngineInterval);
-            setupAuthListener();
+            onReady();
           }
         }, 50);
 
-        // Safety timeout after 4 seconds
-        setTimeout(() => clearInterval(checkEngineInterval), 4000);
+        window.addEventListener('firebase-engine-ready', onReady, { once: true });
+
+        // Safety timeout after 5 seconds
+        setTimeout(() => clearInterval(checkEngineInterval), 5000);
 
         function setupAuthListener() {
           window.FirebaseEngine.testConnection();
