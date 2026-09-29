@@ -3106,7 +3106,19 @@
         }
       }
 
+      let isRemoteUpdating = false;
+      let cloudWriteDebounceTimer = null;
+
       function saveData() {
+        // When user is authenticated via Firebase Auth, write update to doc(db, 'users', user.uid)
+        // and completely bypass / remove localStorage fallback
+        if (currentUser && currentUser.uid) {
+          if (isRemoteUpdating) return;
+          writeStateToFirestore();
+          return;
+        }
+
+        // Local offline fallback only when user is NOT logged in
         localStorage.setItem(STORAGE_KEY_ACCOUNTS, JSON.stringify(accounts));
         localStorage.setItem(STORAGE_KEY_TRANSACTIONS, JSON.stringify(transactions));
         localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
@@ -7000,43 +7012,43 @@
         handleGoogleSignOut();
       }
 
-      function scheduleCloudPush() {
-        if (!currentUser || isRemoteUpdating || !window.FirebaseEngine) return;
-        clearTimeout(pushDebounceTimer);
-        updateSyncUI('SYNCING');
-        pushDebounceTimer = setTimeout(async () => {
-          await pushLocalToCloud(true);
-        }, 400);
-      }
+      function writeStateToFirestore(immediate = false) {
+        if (!currentUser || !currentUser.uid || !window.FirebaseEngine || isRemoteUpdating) return;
 
-      async function pushLocalToCloud(isSilent = false) {
-        if (!currentUser || !window.FirebaseEngine) return;
-        try {
-          const payload = {
-            userId: currentUser.uid,
-            userEmail: currentUser.email,
-            updatedAt: new Date().toISOString(),
-            updatedBy: getDeviceId(),
-            deviceName: getDeviceName(),
-            clientTimestamp: Date.now(),
-            accounts,
-            transactions,
-            savingsPools,
-            settings,
-            categories,
-            version: 2,
-          };
+        const executeWrite = async () => {
+          try {
+            updateSyncUI('SYNCING');
+            const payload = {
+              userId: currentUser.uid,
+              userEmail: currentUser.email || '',
+              accounts: accounts,
+              transactions: transactions,
+              categories: categories,
+              savingsPools: savingsPools,
+              settings: settings,
+              updatedAt: new Date().toISOString(),
+              updatedBy: getDeviceId(),
+              deviceName: getDeviceName(),
+              clientTimestamp: Date.now(),
+              version: 2,
+            };
 
-          await window.FirebaseEngine.saveUserData(currentUser.uid, payload);
-          lastSyncedDate = new Date();
-          updateSyncUI('CONNECTED', 'All changes in sync with cloud');
-          if (!isSilent) {
-            showToast('Synchronized with your Google Account cloud ledger!', 'success');
+            await window.FirebaseEngine.saveUserData(currentUser.uid, payload);
+            lastSyncedDate = new Date();
+            updateSyncUI('CONNECTED', 'All changes live in Firestore');
+          } catch (err) {
+            console.error('Failed to write update to Firestore doc(users/' + currentUser.uid + '):', err);
+            updateSyncUI('ERROR', err.message || 'Write failed');
+            showToast(`Firestore write failed: ${err.message}`, 'error');
           }
-        } catch (err) {
-          console.error('Failed to sync to cloud:', err);
-          updateSyncUI('ERROR', err.message);
-          showToast(`Cloud Sync Failed: ${err.message}`, 'error');
+        };
+
+        clearTimeout(cloudWriteDebounceTimer);
+        if (immediate) {
+          executeWrite();
+        } else {
+          updateSyncUI('SYNCING');
+          cloudWriteDebounceTimer = setTimeout(executeWrite, 100);
         }
       }
 
@@ -7045,8 +7057,9 @@
           showToast('Sign in with Google first to push to cloud.', 'error');
           return;
         }
-        if (!confirm('Overwrite your personal Google Cloud ledger with the current local dataset on this device?')) return;
-        await pushLocalToCloud(false);
+        if (!confirm('Overwrite your personal Google Cloud Firestore ledger with the current in-memory dataset?')) return;
+        await writeStateToFirestore(true);
+        showToast('Synchronized with Google Cloud Firestore!', 'success');
       }
 
       async function forcePullCloud() {
@@ -7062,16 +7075,20 @@
             updateSyncUI('CONNECTED');
             return;
           }
-          if (Array.isArray(remote.accounts)) accounts = remote.accounts;
-          if (Array.isArray(remote.transactions)) transactions = remote.transactions;
-          if (Array.isArray(remote.savingsPools)) savingsPools = remote.savingsPools;
-          if (remote.settings) settings = { ...DEFAULT_SETTINGS, ...remote.settings };
-          if (remote.categories) categories = remote.categories;
-          saveData(true);
-          renderAll();
-          lastSyncedDate = new Date();
-          updateSyncUI('CONNECTED', 'Pulled freshest data from cloud');
-          showToast(`Loaded ${accounts.length} accounts & ${transactions.length} transactions from cloud!`, 'success');
+          isRemoteUpdating = true;
+          try {
+            if (Array.isArray(remote.accounts)) accounts = remote.accounts;
+            if (Array.isArray(remote.transactions)) transactions = remote.transactions;
+            if (Array.isArray(remote.savingsPools)) savingsPools = remote.savingsPools;
+            if (remote.settings) settings = { ...DEFAULT_SETTINGS, ...remote.settings };
+            if (remote.categories) categories = remote.categories;
+            renderAll();
+            lastSyncedDate = new Date();
+            updateSyncUI('CONNECTED', 'Pulled freshest data from Firestore');
+            showToast(`Loaded ${accounts.length} accounts & ${transactions.length} transactions from Firestore!`, 'success');
+          } finally {
+            isRemoteUpdating = false;
+          }
         } catch (err) {
           updateSyncUI('ERROR', err.message);
           showToast(`Cloud Pull Failed: ${err.message}`, 'error');
@@ -7083,7 +7100,7 @@
           await handleGoogleSignIn();
           return;
         }
-        await pushLocalToCloud(false);
+        await writeStateToFirestore(true);
       }
 
       // Initialize Google Authentication and Firestore Real-Time Listener
@@ -7123,53 +7140,74 @@
             if (user) {
               currentUser = user;
               updateAuthUI(user);
+              updateSyncUI('CONNECTING', `Connecting live document users/${user.uid}...`);
 
-              // 1. Initial Cloud Sync / Merge Check
-              try {
-                updateSyncUI('CONNECTING', 'Checking cloud ledger...');
-                const remoteData = await window.FirebaseEngine.getUserData(user.uid);
-
-                if (remoteData && Array.isArray(remoteData.accounts) && remoteData.accounts.length > 0) {
-                  // Cloud data exists: restore it into the application
-                  accounts = remoteData.accounts;
-                  if (Array.isArray(remoteData.transactions)) transactions = remoteData.transactions;
-                  if (Array.isArray(remoteData.savingsPools)) savingsPools = remoteData.savingsPools;
-                  if (remoteData.settings && typeof remoteData.settings === 'object') {
-                    settings = { ...DEFAULT_SETTINGS, ...remoteData.settings };
-                  }
-                  if (remoteData.categories && typeof remoteData.categories === 'object') {
-                    categories = remoteData.categories;
-                  }
-                  saveData(true); // write to localStorage cache, skip re-pushing
-                  renderAll();
-                  showToast(`Restored cloud ledger for ${user.displayName || user.email}`, 'success');
-                } else {
-                  // No cloud data yet for this user: seed cloud from current local ledger
-                  await pushLocalToCloud(true);
-                  showToast(`Initialized cloud ledger for ${user.displayName || user.email}`, 'success');
-                }
-              } catch (err) {
-                console.error('Error fetching cloud ledger on login:', err);
-              }
-
-              // 2. Attach Real-Time onSnapshot Listener
               if (currentUserDocUnsubscribe) {
                 currentUserDocUnsubscribe();
+                currentUserDocUnsubscribe = null;
               }
 
+              let hasCheckedInitialData = false;
+
+              // Subscribe to Firestore live document users/${user.uid} using onSnapshot
               currentUserDocUnsubscribe = window.FirebaseEngine.subscribeToUserData(
                 user.uid,
-                (remote) => {
+                async (remote) => {
+                  // If Firestore has no data for the user yet, upload the initial template data to Firestore once on first login
+                  if (!hasCheckedInitialData) {
+                    hasCheckedInitialData = true;
+                    if (!remote || !Array.isArray(remote.accounts) || remote.accounts.length === 0) {
+                      isRemoteUpdating = true;
+                      try {
+                        updateSyncUI('SYNCING', 'Uploading initial template data to Firestore...');
+                        
+                        accounts = [...INITIAL_ACCOUNTS];
+                        transactions = [...INITIAL_TRANSACTIONS];
+                        savingsPools = JSON.parse(JSON.stringify(INITIAL_SAVINGS_POOLS));
+                        settings = { ...DEFAULT_SETTINGS };
+                        categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+
+                        renderAll();
+
+                        const templatePayload = {
+                          userId: user.uid,
+                          userEmail: user.email || '',
+                          accounts: [...INITIAL_ACCOUNTS],
+                          transactions: [...INITIAL_TRANSACTIONS],
+                          savingsPools: JSON.parse(JSON.stringify(INITIAL_SAVINGS_POOLS)),
+                          settings: { ...DEFAULT_SETTINGS },
+                          categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+                          updatedAt: new Date().toISOString(),
+                          updatedBy: getDeviceId(),
+                          deviceName: getDeviceName(),
+                          clientTimestamp: Date.now(),
+                          version: 2,
+                        };
+
+                        await window.FirebaseEngine.saveUserData(user.uid, templatePayload);
+                        lastSyncedDate = new Date();
+                        updateSyncUI('CONNECTED', `Live sync active for ${user.email}`);
+                        showToast(`Uploaded initial template data to Cloud Firestore for ${user.displayName || user.email}!`, 'success');
+                      } catch (err) {
+                        console.error('Failed to upload initial template to Firestore:', err);
+                        updateSyncUI('ERROR', err.message);
+                      } finally {
+                        isRemoteUpdating = false;
+                      }
+                      return;
+                    }
+                  }
+
                   if (!remote) return;
 
-                  // Check if originated from this client
+                  // Check if originated from this device client write
                   if (remote.updatedBy === getDeviceId()) {
                     lastSyncedDate = new Date();
                     updateSyncUI('CONNECTED', 'All changes in sync with cloud');
                     return;
                   }
 
-                  // Apply remote change from another device
+                  // Apply remote change from another device via live onSnapshot
                   isRemoteUpdating = true;
                   try {
                     if (Array.isArray(remote.accounts)) accounts = remote.accounts;
@@ -7182,7 +7220,6 @@
                       categories = remote.categories;
                     }
 
-                    saveData(true); // save to localStorage, skip remote push
                     renderAll();
 
                     lastSyncedDate = new Date();
@@ -7195,10 +7232,10 @@
                   }
                 },
                 (err) => {
-                  console.error('Firestore snapshot error:', err);
+                  console.error('Firestore snapshot error on users/' + user.uid + ':', err);
                   syncErrorMsg = err.message || 'Snapshot error';
                   updateSyncUI('ERROR', syncErrorMsg);
-                  showToast(`Cloud Sync: ${syncErrorMsg}`, 'error');
+                  showToast(`Cloud Sync Error: ${syncErrorMsg}`, 'error');
                 }
               );
 
@@ -7212,6 +7249,9 @@
                 currentUserDocUnsubscribe = null;
               }
               updateAuthUI(null);
+              updateSyncUI('LOCAL', 'Offline Local Storage');
+              loadData();
+              renderAll();
             }
           });
         }

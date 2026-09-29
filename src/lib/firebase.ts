@@ -352,7 +352,7 @@ export function onAuthUserChanged(callback: (user: User | null) => void): Unsubs
 
 /**
  * Subscribe to User's Firestore Cloud Ledger in Real-Time
- * Synchronizes all app data under users/{user.uid}
+ * Synchronizes all app data under users/${user.uid}
  */
 export function subscribeToUserData(
   userId: string,
@@ -361,8 +361,8 @@ export function subscribeToUserData(
 ): Unsubscribe {
   try {
     const firestore = getDbSafe();
-    const docPath = `users/${userId}/data/vault`;
-    const userDocRef = doc(firestore, 'users', userId, 'data', 'vault');
+    const docPath = `users/${userId}`;
+    const userDocRef = doc(firestore, 'users', userId);
 
     return onSnapshot(
       userDocRef,
@@ -388,14 +388,13 @@ export function subscribeToUserData(
 }
 
 /**
- * Save / Push State to User's Firestore Cloud Ledger under users/{user.uid}
- * Writes to primary path users/{userId}/data/vault and syncs users/{userId}
+ * Save / Push State to User's Firestore Cloud Ledger under users/${user.uid}
+ * Writes directly to doc(db, 'users', user.uid)
  */
 export async function saveUserData(userId: string, data: Record<string, unknown>): Promise<void> {
   const firestore = getDbSafe();
-  const docPath = `users/${userId}/data/vault`;
-  const userVaultRef = doc(firestore, 'users', userId, 'data', 'vault');
-  const userDirectRef = doc(firestore, 'users', userId);
+  const docPath = `users/${userId}`;
+  const userDocRef = doc(firestore, 'users', userId);
 
   try {
     const payload = {
@@ -404,36 +403,23 @@ export async function saveUserData(userId: string, data: Record<string, unknown>
       updatedAt: new Date().toISOString(),
     };
     
-    // Write primary subcollection record
-    await setDoc(userVaultRef, payload, { merge: true });
-
-    // Also mirror to users/{userId} for direct path parity
-    try {
-      await setDoc(userDirectRef, payload, { merge: true });
-    } catch {
-      // non-fatal if security rules strictly govern subcollection
-    }
+    await setDoc(userDocRef, payload, { merge: true });
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, docPath);
   }
 }
 
 /**
- * Fetch one-time snapshot of user's ledger data under users/{user.uid}
+ * Fetch one-time snapshot of user's ledger data under users/${user.uid}
  */
 export async function getUserData(userId: string): Promise<Record<string, unknown> | null> {
   const firestore = getDbSafe();
-  const docPath = `users/${userId}/data/vault`;
-  const userVaultRef = doc(firestore, 'users', userId, 'data', 'vault');
-  const userDirectRef = doc(firestore, 'users', userId);
+  const docPath = `users/${userId}`;
+  const userDocRef = doc(firestore, 'users', userId);
 
   try {
-    const snap = await getDoc(userVaultRef);
-    if (snap.exists()) {
-      return snap.data() as Record<string, unknown>;
-    }
-    const directSnap = await getDoc(userDirectRef);
-    return directSnap.exists() ? (directSnap.data() as Record<string, unknown>) : null;
+    const snap = await getDoc(userDocRef);
+    return snap.exists() ? (snap.data() as Record<string, unknown>) : null;
   } catch (error) {
     handleFirestoreError(error, OperationType.GET, docPath);
   }
