@@ -1,0 +1,59 @@
+{
+  "entities": {
+    "UserData": {
+      "title": "UserData",
+      "description": "User financial tracker state containing accounts, transactions, savings pools, categories, and settings",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Unique Firebase Authentication UID of the owner"
+        },
+        "accounts": {
+          "type": "array",
+          "description": "List of bank card, e-wallet, and cash accounts with current balances"
+        },
+        "transactions": {
+          "type": "array",
+          "description": "Ledger history of all income, expense, and transfer records"
+        },
+        "savingsPools": {
+          "type": "array",
+          "description": "Dedicated savings goals and pools with pacing targets"
+        },
+        "categories": {
+          "type": "object",
+          "description": "Customized income, expense, and transfer categories"
+        },
+        "settings": {
+          "type": "object",
+          "description": "Application settings including exchange rates, currency views, and theme"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of the most recent sync"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "Device identifier that initiated the update"
+        },
+        "deviceName": {
+          "type": "string",
+          "description": "Human-readable device model or browser"
+        },
+        "clientTimestamp": {
+          "type": "number",
+          "description": "Client millisecond epoch timestamp"
+        }
+      },
+      "required": ["userId", "accounts", "transactions", "savingsPools", "categories", "settings"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/data/{docId}": {
+      "schema": "UserData",
+      "description": "User specific data documents under users/{userId}/data collection path"
+    }
+  }
+}

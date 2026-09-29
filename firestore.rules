@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidUserData(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.accounts is list &&
+             data.transactions is list &&
+             data.savingsPools is list &&
+             data.categories is map &&
+             data.settings is map;
+    }
+
+    // User-specific data collection: users/{userId}/data/{docId}
+    match /users/{userId}/data/{docId} {
+      allow get: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+      allow list: if isOwner(userId) && isValidId(userId);
+      allow create: if isOwner(userId) && isValidId(userId) && isValidId(docId)
+                    && isValidUserData(incoming());
+      allow update: if isOwner(userId) && isValidId(userId) && isValidId(docId)
+                    && isValidUserData(incoming())
+                    && incoming().userId == existing().userId;
+      allow delete: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+    }
+
+    // Diagnostic connection test endpoint
+    match /test/connection {
+      allow get: if true;
+    }
+  }
+}

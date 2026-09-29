@@ -1,0 +1,8 @@
+{
+  "name": "Remix Fathirridha Finance Tracker",
+  "description": "Multi-currency financial tracker supporting IDR and USD accounts, cross-currency transfers, automated bank admin fees, and transaction reconciliation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
