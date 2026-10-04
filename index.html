@@ -1604,14 +1604,24 @@
                 Direct balance adjustment
               </span>
             </div>
-            <input
-              type="number"
-              step="any"
-              id="account-balance"
-              required
-              placeholder="0"
-              class="w-full text-xs font-mono px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-indigo-500 outline-hidden"
-            />
+            <div class="relative flex items-center">
+              <input
+                type="number"
+                step="any"
+                id="account-balance"
+                required
+                placeholder="0"
+                class="w-full text-xs font-mono px-3 py-2 pr-9 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-indigo-500 outline-hidden"
+              />
+              <button
+                type="button"
+                onclick="openCalculatorForInput('account-balance')"
+                title="Open interactive calculator (🧮)"
+                class="absolute right-1.5 p-1 rounded-md text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors text-xs flex items-center justify-center cursor-pointer"
+              >
+                🧮
+              </button>
+            </div>
           </div>
 
           <!-- Monthly Bank Fee field (visible for Bank Card) -->
@@ -1622,15 +1632,25 @@
               </label>
               <span class="text-[10px] text-slate-400">Automated deduction</span>
             </div>
-            <input
-              type="number"
-              step="any"
-              id="account-monthly-fee"
-              value="0"
-              min="0"
-              placeholder="e.g. 15000 or 5"
-              class="w-full text-xs font-mono px-3 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-indigo-500 outline-hidden"
-            />
+            <div class="relative flex items-center">
+              <input
+                type="number"
+                step="any"
+                id="account-monthly-fee"
+                value="0"
+                min="0"
+                placeholder="e.g. 15000 or 5"
+                class="w-full text-xs font-mono px-3 py-2 pr-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-indigo-500 outline-hidden"
+              />
+              <button
+                type="button"
+                onclick="openCalculatorForInput('account-monthly-fee')"
+                title="Open interactive calculator (🧮)"
+                class="absolute right-1.5 p-1 rounded-md text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors text-xs flex items-center justify-center cursor-pointer"
+              >
+                🧮
+              </button>
+            </div>
             <p class="text-[11px] text-slate-500 dark:text-slate-400">
               Recorded as an expense when "Process Monthly Fees" is triggered. Set to 0 if none.
             </p>
@@ -1795,14 +1815,24 @@
             <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Amount <span id="tx-amount-currency-label" class="text-slate-400 font-mono">(Rp)</span> *
             </label>
-            <input
-              type="number"
-              step="any"
-              id="tx-amount"
-              min="0.01"
-              placeholder="0"
-              class="w-full text-xs font-mono px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-indigo-500 outline-hidden"
-            />
+            <div class="relative flex items-center">
+              <input
+                type="number"
+                step="any"
+                id="tx-amount"
+                min="0.01"
+                placeholder="0"
+                class="w-full text-xs font-mono px-3 py-2 pr-9 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-indigo-500 outline-hidden"
+              />
+              <button
+                type="button"
+                onclick="openCalculatorForInput('tx-amount')"
+                title="Open interactive calculator (🧮)"
+                class="absolute right-1.5 p-1 rounded-md text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors text-xs flex items-center justify-center cursor-pointer"
+              >
+                🧮
+              </button>
+            </div>
           </div>
 
           <!-- Admin Fee / Bill Amount Section (Conditional for Transfer Expense / Top-Up E-Wallet Expense) -->
@@ -1815,14 +1845,24 @@
               <span class="text-[10px] font-medium text-amber-700/80 dark:text-amber-400">Optional automatic deduction</span>
             </div>
 
-            <input
-              type="number"
-              step="any"
-              id="tx-admin-fee"
-              min="0"
-              placeholder="0"
-              class="w-full text-xs font-mono px-3 py-2 rounded-lg bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-amber-500 outline-hidden"
-            />
+            <div class="relative flex items-center">
+              <input
+                type="number"
+                step="any"
+                id="tx-admin-fee"
+                min="0"
+                placeholder="0"
+                class="w-full text-xs font-mono px-3 py-2 pr-9 rounded-lg bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-amber-500 outline-hidden"
+              />
+              <button
+                type="button"
+                onclick="openCalculatorForInput('tx-admin-fee')"
+                title="Open interactive calculator (🧮)"
+                class="absolute right-1.5 p-1 rounded-md text-amber-700 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors text-xs flex items-center justify-center cursor-pointer"
+              >
+                🧮
+              </button>
+            </div>
 
             <!-- Preset Fee Quick Buttons -->
             <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
@@ -1872,15 +1912,25 @@
                 <label class="block text-[11px] font-medium text-slate-700 dark:text-slate-300 mb-1">
                   Source Amount (<span id="cross-source-sym">IDR</span>) *
                 </label>
-                <input
-                  type="number"
-                  step="any"
-                  id="tx-cross-source-amount"
-                  min="0.01"
-                  placeholder="0"
-                  oninput="calculateCrossAmounts('source')"
-                  class="w-full text-xs font-mono px-3 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white outline-hidden"
-                />
+                <div class="relative flex items-center">
+                  <input
+                    type="number"
+                    step="any"
+                    id="tx-cross-source-amount"
+                    min="0.01"
+                    placeholder="0"
+                    oninput="calculateCrossAmounts('source')"
+                    class="w-full text-xs font-mono px-3 py-2 pr-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white outline-hidden"
+                  />
+                  <button
+                    type="button"
+                    onclick="openCalculatorForInput('tx-cross-source-amount')"
+                    title="Open interactive calculator (🧮)"
+                    class="absolute right-1.5 p-1 rounded-md text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors text-xs flex items-center justify-center cursor-pointer"
+                  >
+                    🧮
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -2694,27 +2744,47 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Target Amount *</label>
-              <input
-                type="number"
-                id="pool-target-amount-input"
-                step="any"
-                min="1"
-                required
-                placeholder="e.g. 75000000"
-                class="w-full text-xs font-mono py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-hidden"
-              />
+              <div class="relative flex items-center">
+                <input
+                  type="number"
+                  id="pool-target-amount-input"
+                  step="any"
+                  min="1"
+                  required
+                  placeholder="e.g. 75000000"
+                  class="w-full text-xs font-mono py-2.5 px-3 pr-9 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-hidden"
+                />
+                <button
+                  type="button"
+                  onclick="openCalculatorForInput('pool-target-amount-input')"
+                  title="Open interactive calculator (🧮)"
+                  class="absolute right-2 p-1 rounded-md text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors text-xs flex items-center justify-center cursor-pointer"
+                >
+                  🧮
+                </button>
+              </div>
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Current Saved Amount</label>
-              <input
-                type="number"
-                id="pool-current-amount-input"
-                step="any"
-                min="0"
-                value="0"
-                placeholder="Initial funds in pool"
-                class="w-full text-xs font-mono py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-hidden"
-              />
+              <div class="relative flex items-center">
+                <input
+                  type="number"
+                  id="pool-current-amount-input"
+                  step="any"
+                  min="0"
+                  value="0"
+                  placeholder="Initial funds in pool"
+                  class="w-full text-xs font-mono py-2.5 px-3 pr-9 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-hidden"
+                />
+                <button
+                  type="button"
+                  onclick="openCalculatorForInput('pool-current-amount-input')"
+                  title="Open interactive calculator (🧮)"
+                  class="absolute right-2 p-1 rounded-md text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors text-xs flex items-center justify-center cursor-pointer"
+                >
+                  🧮
+                </button>
+              </div>
             </div>
           </div>
 
@@ -2824,15 +2894,25 @@
                 Use Monthly Rec
               </button>
             </div>
-            <input
-              type="number"
-              id="deposit-amount"
-              step="any"
-              min="1"
-              required
-              placeholder="0"
-              class="w-full text-base font-bold font-mono py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-hidden"
-            />
+            <div class="relative flex items-center">
+              <input
+                type="number"
+                id="deposit-amount"
+                step="any"
+                min="1"
+                required
+                placeholder="0"
+                class="w-full text-base font-bold font-mono py-2.5 px-3 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-hidden"
+              />
+              <button
+                type="button"
+                onclick="openCalculatorForInput('deposit-amount')"
+                title="Open interactive calculator (🧮)"
+                class="absolute right-2 p-1.5 rounded-lg text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors text-sm flex items-center justify-center cursor-pointer"
+              >
+                🧮
+              </button>
+            </div>
             <div id="deposit-quick-buttons" class="flex flex-wrap gap-1.5 mt-2">
               <!-- Preset buttons injected dynamically based on currency -->
             </div>
@@ -2932,15 +3012,25 @@
                 Max (100%)
               </button>
             </div>
-            <input
-              type="number"
-              id="withdraw-amount"
-              step="any"
-              min="1"
-              required
-              placeholder="0"
-              class="w-full text-base font-bold font-mono py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-hidden"
-            />
+            <div class="relative flex items-center">
+              <input
+                type="number"
+                id="withdraw-amount"
+                step="any"
+                min="1"
+                required
+                placeholder="0"
+                class="w-full text-base font-bold font-mono py-2.5 px-3 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-hidden"
+              />
+              <button
+                type="button"
+                onclick="openCalculatorForInput('withdraw-amount')"
+                title="Open interactive calculator (🧮)"
+                class="absolute right-2 p-1.5 rounded-lg text-slate-500 hover:text-amber-600 dark:text-slate-400 dark:hover:text-amber-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors text-sm flex items-center justify-center cursor-pointer"
+              >
+                🧮
+              </button>
+            </div>
             <div class="flex gap-2 mt-2">
               <button
                 type="button"
@@ -3005,6 +3095,117 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- MODAL: INTERACTIVE POPUP CALCULATOR TOOL -->
+    <div id="calculator-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 flex flex-col">
+        <!-- Header -->
+        <div class="p-3.5 sm:p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/80 dark:bg-slate-800/50 shrink-0">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 flex items-center justify-center text-base font-bold shadow-2xs border border-purple-200 dark:border-purple-800/60">
+              🧮
+            </div>
+            <div>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Amount Calculator</h3>
+              <p id="calc-target-label" class="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate max-w-[200px]">Target: Nominal Input</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onclick="closeCalculatorModal()"
+            class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- Calculator Body & Display -->
+        <div class="p-4 space-y-3">
+          <!-- Screen Display -->
+          <div class="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-right space-y-1.5 shadow-inner">
+            <div id="calc-expression" class="text-xs font-mono text-slate-500 dark:text-slate-400 tracking-wider overflow-x-auto whitespace-nowrap min-h-[18px]">
+              0
+            </div>
+            <div class="flex items-baseline justify-between gap-2">
+              <span id="calc-currency-badge" class="text-[11px] font-bold font-mono px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 shrink-0">
+                IDR (Rp)
+              </span>
+              <div id="calc-result" class="text-xl sm:text-2xl font-black font-mono text-slate-900 dark:text-white tracking-tight overflow-x-auto whitespace-nowrap">
+                0
+              </div>
+            </div>
+            <div id="calc-formatted-preview" class="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 min-h-[14px]">
+              Preview: Rp 0
+            </div>
+          </div>
+
+          <!-- Numpad & Operator Grid -->
+          <div class="grid grid-cols-4 gap-2 text-xs font-semibold">
+            <!-- Row 1: Actions & Division -->
+            <button type="button" onclick="calcAction('C')" class="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 dark:text-rose-300 transition-all active:scale-95 border border-rose-200 dark:border-rose-900/40 cursor-pointer">C</button>
+            <button type="button" onclick="calcAction('CE')" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 transition-all active:scale-95 border border-slate-200 dark:border-slate-700 cursor-pointer">CE</button>
+            <button type="button" onclick="calcAction('BACKSPACE')" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 transition-all active:scale-95 border border-slate-200 dark:border-slate-700 cursor-pointer" title="Backspace">⌫</button>
+            <button type="button" onclick="calcAction('/')" class="p-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-800 dark:bg-purple-950/80 dark:hover:bg-purple-900 dark:text-purple-200 font-bold transition-all active:scale-95 border border-purple-200 dark:border-purple-800/80 cursor-pointer">&divide;</button>
+
+            <!-- Row 2: 7, 8, 9, Multiplication -->
+            <button type="button" onclick="calcAction('7')" class="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-100 font-mono text-sm transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer">7</button>
+            <button type="button" onclick="calcAction('8')" class="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-100 font-mono text-sm transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer">8</button>
+            <button type="button" onclick="calcAction('9')" class="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-100 font-mono text-sm transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer">9</button>
+            <button type="button" onclick="calcAction('*')" class="p-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-800 dark:bg-purple-950/80 dark:hover:bg-purple-900 dark:text-purple-200 font-bold transition-all active:scale-95 border border-purple-200 dark:border-purple-800/80 cursor-pointer">&times;</button>
+
+            <!-- Row 3: 4, 5, 6, Subtraction -->
+            <button type="button" onclick="calcAction('4')" class="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-100 font-mono text-sm transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer">4</button>
+            <button type="button" onclick="calcAction('5')" class="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-100 font-mono text-sm transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer">5</button>
+            <button type="button" onclick="calcAction('6')" class="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-100 font-mono text-sm transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer">6</button>
+            <button type="button" onclick="calcAction('-')" class="p-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-800 dark:bg-purple-950/80 dark:hover:bg-purple-900 dark:text-purple-200 font-bold transition-all active:scale-95 border border-purple-200 dark:border-purple-800/80 cursor-pointer">&minus;</button>
+
+            <!-- Row 4: 1, 2, 3, Addition -->
+            <button type="button" onclick="calcAction('1')" class="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-100 font-mono text-sm transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer">1</button>
+            <button type="button" onclick="calcAction('2')" class="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-100 font-mono text-sm transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer">2</button>
+            <button type="button" onclick="calcAction('3')" class="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-100 font-mono text-sm transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer">3</button>
+            <button type="button" onclick="calcAction('+')" class="p-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-800 dark:bg-purple-950/80 dark:hover:bg-purple-900 dark:text-purple-200 font-bold transition-all active:scale-95 border border-purple-200 dark:border-purple-800/80 cursor-pointer">+</button>
+
+            <!-- Row 5: 0, 000, ., Equals -->
+            <button type="button" onclick="calcAction('0')" class="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-100 font-mono text-sm transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer">0</button>
+            <button type="button" onclick="calcAction('000')" class="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 dark:bg-slate-800/80 dark:hover:bg-slate-700 dark:text-slate-200 font-mono text-xs transition-all active:scale-95 border border-slate-200 dark:border-slate-700 cursor-pointer" title="Add thousand zeros">000</button>
+            <button type="button" onclick="calcAction('.')" class="p-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-100 font-mono text-sm transition-all active:scale-95 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer">.</button>
+            <button type="button" onclick="calcAction('=')" class="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-all active:scale-95 border border-emerald-500 shadow-xs cursor-pointer">=</button>
+          </div>
+
+          <!-- Quick Percentage / Math Helpers -->
+          <div class="flex items-center justify-between gap-1.5 pt-1 text-[11px]">
+            <div class="flex items-center gap-1">
+              <span class="text-slate-400 font-medium mr-0.5">Quick:</span>
+              <button type="button" onclick="calcAction('(')" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono cursor-pointer">(</button>
+              <button type="button" onclick="calcAction(')')" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono cursor-pointer">)</button>
+            </div>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="calcQuickTax(0.11)" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono cursor-pointer" title="Add 11% Value Added Tax / PPN">+11% PPN</button>
+              <button type="button" onclick="calcQuickRound()" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono cursor-pointer" title="Round to integer or 2 decimals">Round</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prominent Apply / Insert Value Action Footer -->
+        <div class="p-3.5 sm:p-4 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 bg-slate-50/50 dark:bg-slate-900 shrink-0">
+          <button
+            type="button"
+            onclick="closeCalculatorModal()"
+            class="w-1/3 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onclick="applyCalculatorValue()"
+            class="w-2/3 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer"
+          >
+            <span>Apply / Insert Value</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -4181,6 +4382,262 @@
             showToast(`Account "${acc.name}" deleted`, 'info');
           }
         );
+      }
+
+      // ==========================================
+      // INTERACTIVE POPUP CALCULATOR TOOL
+      // ==========================================
+      let activeCalcTargetId = null;
+      let activeCalcCurrency = 'IDR';
+      let calcExpression = '0';
+      let calcCurrentResult = 0;
+
+      function isCalculatorModalOpen() {
+        const modal = document.getElementById('calculator-modal');
+        return modal && !modal.classList.contains('hidden');
+      }
+
+      function detectCurrencyForInput(inputId) {
+        if (inputId === 'tx-amount' || inputId === 'tx-admin-fee') {
+          const accId = document.getElementById('tx-account')?.value;
+          const acc = accId ? getAccount(accId) : null;
+          return acc ? acc.currency : (settings.currencyView === 'USD' ? 'USD' : 'IDR');
+        }
+        if (inputId === 'tx-cross-source-amount') {
+          const fromId = document.getElementById('tx-from-account')?.value;
+          const acc = fromId ? getAccount(fromId) : null;
+          return acc ? acc.currency : 'IDR';
+        }
+        if (inputId === 'account-balance' || inputId === 'account-monthly-fee') {
+          return document.getElementById('account-currency')?.value || 'IDR';
+        }
+        if (inputId === 'pool-target-amount-input' || inputId === 'pool-current-amount-input') {
+          return document.getElementById('pool-currency-input')?.value || 'IDR';
+        }
+        if (inputId === 'deposit-amount') {
+          return activeDepositPool ? activeDepositPool.currency : 'IDR';
+        }
+        if (inputId === 'withdraw-amount') {
+          return activeWithdrawPool ? activeWithdrawPool.currency : 'IDR';
+        }
+        return 'IDR';
+      }
+
+      function detectLabelForInput(inputId) {
+        const labels = {
+          'tx-amount': 'Transaction Amount',
+          'tx-admin-fee': 'Admin Fee / Bill Amount',
+          'tx-cross-source-amount': 'Cross Transfer Source Amount',
+          'account-balance': 'Account Current Balance',
+          'account-monthly-fee': 'Account Monthly Admin Fee',
+          'pool-target-amount-input': 'Savings Target Objective',
+          'pool-current-amount-input': 'Current Saved Amount',
+          'deposit-amount': 'Deposit to Savings Pool',
+          'withdraw-amount': 'Withdraw from Savings Pool',
+        };
+        return labels[inputId] || 'Nominal Amount';
+      }
+
+      function openCalculatorForInput(inputId, customCurrency = null) {
+        activeCalcTargetId = inputId;
+        activeCalcCurrency = customCurrency || detectCurrencyForInput(inputId);
+
+        const targetEl = document.getElementById(inputId);
+        const currentVal = targetEl ? targetEl.value.trim() : '';
+
+        // If target field already has a positive numeric value, seed calculator with it
+        if (currentVal && !isNaN(Number(currentVal)) && Number(currentVal) > 0) {
+          calcExpression = String(currentVal);
+          calcCurrentResult = Number(currentVal);
+        } else {
+          calcExpression = '0';
+          calcCurrentResult = 0;
+        }
+
+        // Update target title & currency badge
+        const labelEl = document.getElementById('calc-target-label');
+        if (labelEl) {
+          labelEl.textContent = `Target: ${detectLabelForInput(inputId)}`;
+        }
+
+        const badgeEl = document.getElementById('calc-currency-badge');
+        if (badgeEl) {
+          badgeEl.textContent = `${activeCalcCurrency} (${activeCalcCurrency === 'IDR' ? 'Rp' : '$'})`;
+        }
+
+        updateCalculatorDisplay();
+
+        const modal = document.getElementById('calculator-modal');
+        if (modal) modal.classList.remove('hidden');
+      }
+
+      function closeCalculatorModal() {
+        const modal = document.getElementById('calculator-modal');
+        if (modal) modal.classList.add('hidden');
+      }
+
+      function safeEvaluateExpression(expr) {
+        if (!expr || typeof expr !== 'string') return 0;
+        let sanitized = expr
+          .replace(/×/g, '*')
+          .replace(/÷/g, '/')
+          .replace(/−/g, '-');
+
+        // Strip trailing operators/dots for live calculation
+        let evalStr = sanitized.replace(/[+\-*/(.]+$/, '').trim();
+        if (!evalStr) return 0;
+
+        // Balance open parentheses
+        const openCount = (evalStr.match(/\(/g) || []).length;
+        const closeCount = (evalStr.match(/\)/g) || []).length;
+        if (openCount > closeCount) {
+          evalStr += ')'.repeat(openCount - closeCount);
+        }
+
+        // Whitelist security check: numbers, dots, spaces, parens, arithmetic operators
+        if (!/^[0-9+\-*/().\s]+$/.test(evalStr)) {
+          return null;
+        }
+
+        try {
+          const res = Function('"use strict"; return (' + evalStr + ')')();
+          if (typeof res === 'number' && !isNaN(res) && isFinite(res)) {
+            return res;
+          }
+          return null;
+        } catch {
+          return null;
+        }
+      }
+
+      function updateCalculatorDisplay() {
+        const exprEl = document.getElementById('calc-expression');
+        const resEl = document.getElementById('calc-result');
+        const previewEl = document.getElementById('calc-formatted-preview');
+
+        if (exprEl) {
+          exprEl.textContent = calcExpression || '0';
+        }
+
+        const evalRes = safeEvaluateExpression(calcExpression);
+        if (evalRes !== null) {
+          calcCurrentResult = evalRes;
+        }
+
+        if (resEl) {
+          resEl.textContent = String(Math.round(calcCurrentResult * 1000) / 1000);
+        }
+
+        if (previewEl) {
+          previewEl.textContent = `Preview: ${formatMoney(calcCurrentResult, activeCalcCurrency)}`;
+        }
+      }
+
+      function calcAction(action) {
+        if (action === 'C') {
+          calcExpression = '0';
+          calcCurrentResult = 0;
+        } else if (action === 'CE') {
+          const lastOpIdx = Math.max(
+            calcExpression.lastIndexOf('+'),
+            calcExpression.lastIndexOf('-'),
+            calcExpression.lastIndexOf('*'),
+            calcExpression.lastIndexOf('/')
+          );
+          if (lastOpIdx >= 0) {
+            calcExpression = calcExpression.substring(0, lastOpIdx + 1);
+          } else {
+            calcExpression = '0';
+          }
+        } else if (action === 'BACKSPACE') {
+          if (calcExpression.length > 1) {
+            calcExpression = calcExpression.slice(0, -1);
+          } else {
+            calcExpression = '0';
+          }
+        } else if (action === '=') {
+          const finalRes = safeEvaluateExpression(calcExpression);
+          if (finalRes !== null) {
+            calcCurrentResult = finalRes;
+            calcExpression = String(Math.round(finalRes * 1000) / 1000);
+          }
+        } else if (action === '000') {
+          if (calcExpression !== '0' && !/[+\-*/(]$/.test(calcExpression)) {
+            calcExpression += '000';
+          }
+        } else if (['+', '-', '*', '/'].includes(action)) {
+          if (/[+\-*/]$/.test(calcExpression)) {
+            calcExpression = calcExpression.slice(0, -1) + action;
+          } else {
+            calcExpression += action;
+          }
+        } else if (action === '.') {
+          const parts = calcExpression.split(/[+\-*/()]/);
+          const currentPart = parts[parts.length - 1];
+          if (!currentPart.includes('.')) {
+            calcExpression += '.';
+          }
+        } else if (action === '(' || action === ')') {
+          if (calcExpression === '0' && action === '(') {
+            calcExpression = '(';
+          } else {
+            calcExpression += action;
+          }
+        } else {
+          // Digits 0-9
+          if (calcExpression === '0') {
+            calcExpression = action;
+          } else {
+            calcExpression += action;
+          }
+        }
+
+        updateCalculatorDisplay();
+      }
+
+      function calcQuickTax(rate = 0.11) {
+        const current = safeEvaluateExpression(calcExpression);
+        if (current !== null) {
+          calcExpression = `(${current} * ${1 + rate})`;
+          updateCalculatorDisplay();
+        }
+      }
+
+      function calcQuickRound() {
+        const current = safeEvaluateExpression(calcExpression);
+        if (current !== null) {
+          const rounded = activeCalcCurrency === 'IDR' ? Math.round(current) : Math.round(current * 100) / 100;
+          calcExpression = String(rounded);
+          updateCalculatorDisplay();
+        }
+      }
+
+      function applyCalculatorValue() {
+        const finalVal = safeEvaluateExpression(calcExpression);
+        const resolved = finalVal !== null ? finalVal : calcCurrentResult;
+
+        if (resolved === null || isNaN(resolved) || !isFinite(resolved) || resolved < 0) {
+          showToast('Invalid calculated amount', 'error');
+          return;
+        }
+
+        const cleanVal = activeCalcCurrency === 'IDR' ? Math.round(resolved) : Math.round(resolved * 100) / 100;
+
+        if (activeCalcTargetId) {
+          const targetEl = document.getElementById(activeCalcTargetId);
+          if (targetEl) {
+            targetEl.value = cleanVal;
+            targetEl.dispatchEvent(new Event('input', { bubbles: true }));
+            targetEl.dispatchEvent(new Event('change', { bubbles: true }));
+
+            if (activeCalcTargetId === 'tx-cross-source-amount' && typeof calculateCrossAmounts === 'function') {
+              calculateCrossAmounts('source');
+            }
+          }
+        }
+
+        closeCalculatorModal();
+        showToast(`✓ Applied ${formatMoney(cleanVal, activeCalcCurrency)} to ${detectLabelForInput(activeCalcTargetId)}`, 'success');
       }
 
       // ==========================================
@@ -8063,9 +8520,38 @@
           .replace(/'/g, '&#039;');
       }
 
-      // Keyboard Esc handler for modals
+      // Keyboard handler for modals and active calculator
       window.addEventListener('keydown', (e) => {
+        // If interactive calculator modal is active, allow numpad and keyboard operators
+        if (isCalculatorModalOpen()) {
+          if (e.key === 'Escape') {
+            closeCalculatorModal();
+            return;
+          }
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            applyCalculatorValue();
+            return;
+          }
+          if (e.key === 'Backspace') {
+            e.preventDefault();
+            calcAction('BACKSPACE');
+            return;
+          }
+          if (e.key === 'c' || e.key === 'C') {
+            e.preventDefault();
+            calcAction('C');
+            return;
+          }
+          if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '+', '-', '*', '/', '(', ')', '='].includes(e.key)) {
+            e.preventDefault();
+            calcAction(e.key);
+            return;
+          }
+        }
+
         if (e.key === 'Escape') {
+          closeCalculatorModal();
           closeUserDropdown();
           closePurpleDrawer();
           closeAccountModal();
