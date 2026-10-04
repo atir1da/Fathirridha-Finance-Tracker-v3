@@ -11,6 +11,7 @@
  */
 
 import { initializeApp, getApps, deleteApp, type FirebaseApp } from 'firebase/app';
+import appletConfig from '../../firebase-applet-config.json';
 import {
   getAuth,
   GoogleAuthProvider,
@@ -109,7 +110,7 @@ function getEnvValue(keys: string[]): string {
 function getStoredUserConfig(): Partial<FirebaseAppConfig> {
   if (typeof window === 'undefined') return {};
   try {
-    const raw = localStorage.getItem('ft_firebase_config_v1');
+    const raw = localStorage.getItem('fathirridha_firebase_config_v1') || localStorage.getItem('ft_firebase_config_v1');
     if (raw) {
       const parsed = JSON.parse(raw);
       if (typeof parsed === 'object' && parsed !== null) {
@@ -123,9 +124,10 @@ function getStoredUserConfig(): Partial<FirebaseAppConfig> {
 }
 
 /**
- * Resolves Firebase configuration prioritizing environment variables:
- * 1. import.meta.env / process.env
- * 2. localStorage override (ft_firebase_config_v1)
+ * Resolves Firebase configuration prioritizing:
+ * 1. Environment variables (import.meta.env / process.env)
+ * 2. Bundled firebase-applet-config.json
+ * 3. localStorage override (fathirridha_firebase_config_v1)
  */
 export function resolveFirebaseConfig(): FirebaseAppConfig {
   const envConfig: FirebaseAppConfig = {
@@ -141,16 +143,16 @@ export function resolveFirebaseConfig(): FirebaseAppConfig {
 
   const stored = getStoredUserConfig();
 
-  // Combine: environment variables take precedence, falling back to stored config if env is empty
+  // Combine: env takes first priority, then appletConfig, then stored config
   const config: FirebaseAppConfig = {
-    apiKey: envConfig.apiKey || stored.apiKey || '',
-    authDomain: envConfig.authDomain || stored.authDomain || '',
-    projectId: envConfig.projectId || stored.projectId || '',
-    storageBucket: envConfig.storageBucket || stored.storageBucket || '',
-    messagingSenderId: envConfig.messagingSenderId || stored.messagingSenderId || '',
-    appId: envConfig.appId || stored.appId || '',
-    measurementId: envConfig.measurementId || stored.measurementId || '',
-    firestoreDatabaseId: envConfig.firestoreDatabaseId || stored.firestoreDatabaseId || '',
+    apiKey: envConfig.apiKey || appletConfig.apiKey || stored.apiKey || '',
+    authDomain: envConfig.authDomain || appletConfig.authDomain || stored.authDomain || '',
+    projectId: envConfig.projectId || appletConfig.projectId || stored.projectId || '',
+    storageBucket: envConfig.storageBucket || appletConfig.storageBucket || stored.storageBucket || '',
+    messagingSenderId: envConfig.messagingSenderId || appletConfig.messagingSenderId || stored.messagingSenderId || '',
+    appId: envConfig.appId || appletConfig.appId || stored.appId || '',
+    measurementId: envConfig.measurementId || appletConfig.measurementId || stored.measurementId || '',
+    firestoreDatabaseId: envConfig.firestoreDatabaseId || appletConfig.firestoreDatabaseId || stored.firestoreDatabaseId || '',
   };
 
   return config;
@@ -350,9 +352,11 @@ export function onAuthUserChanged(callback: (user: User | null) => void): Unsubs
   }
 }
 
+export const PRIMARY_FIRESTORE_SUBDOC = 'finance';
+
 /**
  * Subscribe to User's Firestore Cloud Ledger in Real-Time
- * Synchronizes all app data under users/${user.uid}
+ * Synchronizes user data under Firestore path: users/{userId}/data/finance
  */
 export function subscribeToUserData(
   userId: string,
@@ -361,15 +365,25 @@ export function subscribeToUserData(
 ): Unsubscribe {
   try {
     const firestore = getDbSafe();
-    const docPath = `users/${userId}`;
-    const userDocRef = doc(firestore, 'users', userId);
+    const docPath = `users/${userId}/data/${PRIMARY_FIRESTORE_SUBDOC}`;
+    const userDocRef = doc(firestore, 'users', userId, 'data', PRIMARY_FIRESTORE_SUBDOC);
 
     return onSnapshot(
       userDocRef,
-      (snapshot) => {
+      async (snapshot) => {
         if (snapshot.exists()) {
           onData(snapshot.data() as Record<string, unknown>);
         } else {
+          // If subcollection doc doesn't exist yet, check fallback paths once
+          try {
+            const fallback = await getUserData(userId);
+            if (fallback) {
+              onData(fallback);
+              return;
+            }
+          } catch {
+            // ignore
+          }
           onData(null);
         }
       },
@@ -388,13 +402,14 @@ export function subscribeToUserData(
 }
 
 /**
- * Save / Push State to User's Firestore Cloud Ledger under users/${user.uid}
- * Writes directly to doc(db, 'users', user.uid)
+ * Save / Push State to User's Firestore Cloud Ledger
+ * Writes directly to the user's Firestore document: users/{userId}/data/finance
  */
 export async function saveUserData(userId: string, data: Record<string, unknown>): Promise<void> {
   const firestore = getDbSafe();
   const docPath = `users/${userId}`;
-  const userDocRef = doc(firestore, 'users', userId);
+  const rootDocRef = doc(firestore, 'users', userId);
+  const subDocRef = doc(firestore, 'users', userId, 'data', PRIMARY_FIRESTORE_SUBDOC);
 
   try {
     const payload = {
@@ -403,25 +418,59 @@ export async function saveUserData(userId: string, data: Record<string, unknown>
       updatedAt: new Date().toISOString(),
     };
     
-    await setDoc(userDocRef, payload, { merge: true });
+    // 1. Direct write to doc(db, 'users', user.uid)
+    await setDoc(rootDocRef, payload, { merge: true });
+
+    // 2. Also save to subcollection document users/{userId}/data/finance
+    try {
+      await setDoc(subDocRef, payload, { merge: true });
+    } catch {
+      // Subdoc write fallback
+    }
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, docPath);
   }
 }
 
 /**
- * Fetch one-time snapshot of user's ledger data under users/${user.uid}
+ * Fetch one-time snapshot of user's ledger data under users/{userId}/data
+ * Checks users/{userId}/data/finance, then users/{userId}/data/vault, then users/{userId}
  */
 export async function getUserData(userId: string): Promise<Record<string, unknown> | null> {
   const firestore = getDbSafe();
-  const docPath = `users/${userId}`;
-  const userDocRef = doc(firestore, 'users', userId);
+  const primaryDocPath = `users/${userId}/data/${PRIMARY_FIRESTORE_SUBDOC}`;
+  const primaryDocRef = doc(firestore, 'users', userId, 'data', PRIMARY_FIRESTORE_SUBDOC);
 
   try {
-    const snap = await getDoc(userDocRef);
-    return snap.exists() ? (snap.data() as Record<string, unknown>) : null;
+    // 1. Primary path: users/{userId}/data/finance
+    const snap = await getDoc(primaryDocRef);
+    if (snap.exists()) {
+      return snap.data() as Record<string, unknown>;
+    }
+
+    // 2. Legacy subcollection path: users/{userId}/data/vault
+    try {
+      const vaultSnap = await getDoc(doc(firestore, 'users', userId, 'data', 'vault'));
+      if (vaultSnap.exists()) {
+        return vaultSnap.data() as Record<string, unknown>;
+      }
+    } catch {
+      // ignore
+    }
+
+    // 3. Legacy root path: users/{userId}
+    try {
+      const rootSnap = await getDoc(doc(firestore, 'users', userId));
+      if (rootSnap.exists()) {
+        return rootSnap.data() as Record<string, unknown>;
+      }
+    } catch {
+      // ignore
+    }
+
+    return null;
   } catch (error) {
-    handleFirestoreError(error, OperationType.GET, docPath);
+    handleFirestoreError(error, OperationType.GET, primaryDocPath);
   }
 }
 

@@ -157,7 +157,7 @@
               </div>
               <div class="mt-3 pt-2.5 border-t border-purple-400/20 flex items-center justify-between text-[10px] text-purple-200/90 font-mono">
                 <span>Accounts &bull; Ledger &bull; Charts &bull; Calendar</span>
-                <span id="drawer-tx-count-pill" class="px-1.5 py-0.5 rounded bg-black/25 text-amber-200">7 tx</span>
+                <span id="drawer-tx-count-pill" class="px-1.5 py-0.5 rounded bg-black/25 text-amber-200">0 tx</span>
               </div>
             </div>
 
@@ -258,7 +258,7 @@
           </div>
           <div class="flex items-center justify-between text-[11px] text-purple-200/80">
             <span>Allocated so Far</span>
-            <span id="drawer-savings-saved-badge" class="font-mono font-bold text-emerald-300">Rp 80.5M + $2.4k</span>
+            <span id="drawer-savings-saved-badge" class="font-mono font-bold text-emerald-300">Rp 0 + $0</span>
           </div>
         </div>
 
@@ -335,8 +335,132 @@
     </aside>
 
     <div id="app" class="min-h-full flex flex-col">
-      <!-- Top Navigation Bar -->
-      <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur border-b border-slate-200 dark:border-slate-800">
+      <!-- AUTHENTICATION GATEKEEPER SCREEN (Sign-In First Flow) -->
+      <div id="auth-gatekeeper-screen" class="min-h-screen flex flex-col justify-between bg-slate-900 text-slate-100 relative overflow-hidden select-none">
+        <!-- Background Ambient Glow & Mesh -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+          <div class="absolute -top-40 -left-40 w-96 h-96 bg-purple-600/25 rounded-full blur-3xl"></div>
+          <div class="absolute top-1/3 -right-40 w-96 h-96 bg-indigo-600/25 rounded-full blur-3xl"></div>
+          <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl"></div>
+          <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f293708_1px,transparent_1px),linear-gradient(to_bottom,#1f293708_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        </div>
+
+        <!-- Top Mini Bar with Brand & Theme Toggle -->
+        <header class="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 py-6 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-slate-800 p-1 border border-slate-700 shadow-md flex items-center justify-center shrink-0">
+              <img src="/logo.svg" alt="Fathirridha Logo" class="w-full h-full object-contain" onerror="this.style.display='none';" />
+            </div>
+            <div>
+              <span class="font-extrabold text-base sm:text-lg tracking-tight text-white block">Fathirridha Finance Track</span>
+              <span class="text-[11px] text-purple-300 font-mono">Personal Cloud Financial Vault</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button
+              onclick="toggleTheme()"
+              class="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-colors cursor-pointer"
+              title="Toggle theme"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <!-- Main Center Card -->
+        <main class="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
+          <div class="w-full max-w-md bg-slate-800/90 backdrop-blur-xl border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+            
+            <!-- Lock & Brand Header -->
+            <div class="text-center space-y-2">
+              <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 p-0.5 shadow-lg shadow-purple-500/25 flex items-center justify-center">
+                <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center">
+                  <svg class="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                  </svg>
+                </div>
+              </div>
+              <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Sign In to Access Ledger</h1>
+              <p class="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto">
+                Please authenticate with your Google account to retrieve your private multi-currency records, accounts, and goal pools.
+              </p>
+            </div>
+
+            <!-- Loading / Status Pill -->
+            <div id="gatekeeper-loading-state" class="p-3.5 rounded-xl bg-purple-950/50 border border-purple-800/60 flex items-center gap-3">
+              <svg class="w-5 h-5 text-purple-400 animate-spin shrink-0" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+              <div class="min-w-0">
+                <p id="gatekeeper-status-title" class="text-xs font-semibold text-purple-200">Checking Cloud Session…</p>
+                <p id="gatekeeper-status-desc" class="text-[10px] text-purple-400 font-mono truncate">Connecting to Firebase Firestore</p>
+              </div>
+            </div>
+
+            <!-- Prominent Sign In with Google Button -->
+            <div id="gatekeeper-actions-container" class="space-y-3 hidden">
+              <button
+                id="gatekeeper-google-btn"
+                type="button"
+                onclick="handleGoogleSignIn()"
+                class="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center justify-center gap-3 cursor-pointer group active:scale-[0.98] border border-slate-200"
+              >
+                <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>Sign in with Google</span>
+              </button>
+            </div>
+
+            <!-- Feature Highlights -->
+            <div class="pt-4 border-t border-slate-700/60 space-y-2.5">
+              <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Features included in your vault:</p>
+              <ul class="text-xs text-slate-300 space-y-2">
+                <li class="flex items-center gap-2">
+                  <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">✓</span>
+                  <span><strong>IDR & USD Balances</strong> with custom FX currency conversion</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">✓</span>
+                  <span><strong>Real-Time Firestore Sync</strong> under <code>users/{userId}/data</code></span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">✓</span>
+                  <span><strong>Expense Sub-Types</strong> & automatic bank admin fee reconciliation</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">✓</span>
+                  <span><strong>Savings Pools</strong> with target recommendations & visual progress</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Security note -->
+            <div class="text-center pt-2">
+              <span class="text-[10px] text-slate-500 font-mono block">
+                🔒 Isolated to your Google User ID &bull; Anti-Reset Safe on Deploy
+              </span>
+            </div>
+          </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="relative z-10 py-4 text-center text-xs text-slate-500 border-t border-slate-800">
+          <span>Fathirridha Finance Track &copy; 2026 &bull; Multi-Currency Cloud Ledger</span>
+        </footer>
+      </div>
+
+      <!-- MAIN APP SHELL (Revealed only after successful authentication & cloud ledger retrieval) -->
+      <div id="main-app-shell" class="hidden min-h-full flex flex-col">
+        <!-- Top Navigation Bar -->
+        <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur border-b border-slate-200 dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
           <!-- Zone 1: Hamburger Menu, Wordmark Brand & Vector Logo -->
           <div class="flex items-center gap-1.5 sm:gap-3 min-w-0">
@@ -469,6 +593,19 @@
                 </button>
               </div>
             </div>
+
+            <!-- Explicit Save & Apply Persistence Button -->
+            <button
+              id="header-save-apply-btn"
+              onclick="handleManualSaveAndApply()"
+              title="Immediately save and lock ledger to Firebase Firestore & local offline storage"
+              class="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-95 rounded-lg shadow-xs transition-all whitespace-nowrap shrink-0 border border-emerald-500/80 ring-2 ring-emerald-500/20 cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+              </svg>
+              <span>💾 Save & Apply</span>
+            </button>
 
             <!-- Manual Data & Backup Button -->
             <button
@@ -765,7 +902,10 @@
                   >
                     <option value="ALL">All Types</option>
                     <option value="INCOME">Income</option>
-                    <option value="EXPENSE">Expense</option>
+                    <option value="EXPENSE">Expense (All)</option>
+                    <option value="EXPENSE_NORMAL">&bull; Normal Expense</option>
+                    <option value="EXPENSE_TRANSFER">&bull; Transfer Expense</option>
+                    <option value="EXPENSE_TOPUP">&bull; Top-Up E-Wallet</option>
                     <option value="TRANSFER">Transfer (Same Currency)</option>
                     <option value="CROSS_TRANSFER">Cross FX Transfer</option>
                   </select>
@@ -839,8 +979,8 @@
               <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto text-slate-400 mb-3">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               </div>
-              <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">No transactions found</p>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Try adjusting your filters or record a new transaction above.</p>
+              <p id="tx-empty-state-title" class="text-sm font-semibold text-slate-800 dark:text-slate-200">No transactions recorded yet</p>
+              <p id="tx-empty-state-desc" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Get started by recording your first transaction using "+ New Entry" above.</p>
             </div>
 
             <!-- Table Footer Info & Pagination Summary -->
@@ -1344,6 +1484,7 @@
           </div>
         </div>
       </footer>
+      </div><!-- /#main-app-shell -->
     </div>
 
     <!-- MODAL: DAY TRANSACTIONS DETAIL -->
@@ -1567,6 +1708,25 @@
             <input type="hidden" id="tx-type" value="EXPENSE" />
           </div>
 
+          <!-- Expense Sub-Type Dropdown (Visible only when Type is EXPENSE) -->
+          <div id="tx-expense-subtype-group" class="p-3 rounded-lg bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-semibold text-rose-900 dark:text-rose-300">
+                Expense Type *
+              </label>
+              <span class="text-[10px] text-rose-600 dark:text-rose-400 font-medium">Sub-Category Mode</span>
+            </div>
+            <select
+              id="tx-expense-subtype"
+              onchange="handleExpenseSubTypeChange()"
+              class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-white dark:bg-slate-800 border border-rose-300 dark:border-rose-800 text-slate-900 dark:text-white focus:ring-1 focus:ring-rose-500 outline-hidden"
+            >
+              <option value="NORMAL" selected>Normal Expense (Default)</option>
+              <option value="TRANSFER">Transfer Expense</option>
+              <option value="TOPUP">Top-Up E-Wallet Expense</option>
+            </select>
+          </div>
+
           <!-- Date & Category Row -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -1643,6 +1803,59 @@
               placeholder="0"
               class="w-full text-xs font-mono px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-indigo-500 outline-hidden"
             />
+          </div>
+
+          <!-- Admin Fee / Bill Amount Section (Conditional for Transfer Expense / Top-Up E-Wallet Expense) -->
+          <div id="tx-admin-fee-group" class="hidden p-3.5 rounded-lg bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-semibold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                <span>Admin Fee / Bill Amount</span>
+                <span id="tx-admin-fee-currency-label" class="text-amber-700/90 dark:text-amber-400 font-mono text-[11px]">(Rp)</span>
+              </label>
+              <span class="text-[10px] font-medium text-amber-700/80 dark:text-amber-400">Optional automatic deduction</span>
+            </div>
+
+            <input
+              type="number"
+              step="any"
+              id="tx-admin-fee"
+              min="0"
+              placeholder="0"
+              class="w-full text-xs font-mono px-3 py-2 rounded-lg bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-slate-900 dark:text-white focus:ring-1 focus:ring-amber-500 outline-hidden"
+            />
+
+            <!-- Preset Fee Quick Buttons -->
+            <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+              <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400 mr-0.5">Presets:</span>
+              <button
+                type="button"
+                id="preset-fee-btn-1"
+                onclick="setPresetAdminFee(2500)"
+                class="px-2.5 py-1 text-[11px] font-mono font-medium rounded-md bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors shadow-2xs"
+              >
+                + Rp 2,500
+              </button>
+              <button
+                type="button"
+                id="preset-fee-btn-2"
+                onclick="setPresetAdminFee(6500)"
+                class="px-2.5 py-1 text-[11px] font-mono font-medium rounded-md bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors shadow-2xs"
+              >
+                + Rp 6,500
+              </button>
+              <button
+                type="button"
+                id="preset-fee-btn-zero"
+                onclick="setPresetAdminFee(0)"
+                class="px-2.5 py-1 text-[11px] font-mono font-medium rounded-md bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-2xs"
+              >
+                Rp 0
+              </button>
+            </div>
+
+            <p class="text-[11px] text-amber-700 dark:text-amber-400/90 leading-tight">
+              &bull; If &gt; 0, an automatic separate expense entry for <span class="font-semibold underline">Bank Administration Fee</span> will be added to this account ledger.
+            </p>
           </div>
 
           <!-- Cross-Currency Custom Transfer Section -->
@@ -2800,15 +3013,16 @@
       // ==========================================
       // CONSTANTS & SEED DATA
       // ==========================================
-      const STORAGE_KEY_ACCOUNTS = 'nusantara_accounts_v1';
-      const STORAGE_KEY_TRANSACTIONS = 'nusantara_transactions_v1';
-      const STORAGE_KEY_SETTINGS = 'nusantara_settings_v1';
+      const STORAGE_KEY_UNIFIED = 'fathirridha_finance_v1';
+      const STORAGE_KEY_ACCOUNTS = 'fathirridha_accounts_v1';
+      const STORAGE_KEY_TRANSACTIONS = 'fathirridha_transactions_v1';
+      const STORAGE_KEY_SETTINGS = 'fathirridha_settings_v1';
       const STORAGE_KEY_CATEGORIES = 'fathirridha_categories_v1';
       const STORAGE_KEY_SAVINGS_POOLS = 'fathirridha_savings_pools_v1';
-      const STORAGE_KEY_ACTIVE_WORKSPACE = 'ft_active_workspace';
-      const STORAGE_KEY_FIREBASE_CONFIG = 'ft_firebase_config_v1';
+      const STORAGE_KEY_ACTIVE_WORKSPACE = 'fathirridha_active_workspace_v1';
+      const STORAGE_KEY_FIREBASE_CONFIG = 'fathirridha_firebase_config_v1';
       const STORAGE_KEY_SYNC_ROOM = 'ft_sync_room_code_v1';
-      const STORAGE_KEY_DEVICE_ID = 'ft_device_id_v1';
+      const STORAGE_KEY_DEVICE_ID = 'fathirridha_device_id_v1';
       const STORAGE_KEY_AUTO_SYNC = 'ft_sync_auto_v1';
       const DEFAULT_ROOM_CODE = 'fathirridha-vault';
 
@@ -2820,6 +3034,8 @@
       let currentRoomCode = DEFAULT_ROOM_CODE;
       let myDeviceId = '';
       let isRemoteUpdating = false;
+      let hasCheckedInitialData = false;
+      let cloudWriteDebounceTimer = null;
       let pushDebounceTimer = null;
       let lastSyncedDate = null;
 
@@ -2829,213 +3045,143 @@
         defaultRate: 16000,
       };
 
-      // Pre-built Savings Goals requested by user
-      const INITIAL_SAVINGS_POOLS = [
-        {
-          id: 'pool-marriage',
-          name: 'Dream Wedding & Reception',
-          categoryTag: 'Marriage',
-          icon: '💒',
-          currency: 'IDR',
-          targetAmount: 75000000,
-          currentAmount: 18500000,
-          targetDate: '2027-12-31',
-          description: 'Venue, catering, attire, documentation, and celebration fund for our dream wedding.',
-          createdAt: '2026-01-15',
-          isPrebuilt: true,
-        },
-        {
-          id: 'pool-house',
-          name: 'Home Down Payment (DP Rumah)',
-          categoryTag: 'House',
-          icon: '🏠',
-          currency: 'IDR',
-          targetAmount: 150000000,
-          currentAmount: 35000000,
-          targetDate: '2028-06-30',
-          description: '20% down payment fund for landed residential property in South Tangerang / BSD.',
-          createdAt: '2026-02-01',
-          isPrebuilt: true,
-        },
-        {
-          id: 'pool-vehicle',
-          name: 'Electric Vehicle (EV) Down Payment',
-          categoryTag: 'Vehicle',
-          icon: '🚗',
-          currency: 'IDR',
-          targetAmount: 45000000,
-          currentAmount: 12000000,
-          targetDate: '2027-04-30',
-          description: 'Down payment for daily electric commute vehicle and home fast charger installation.',
-          createdAt: '2026-03-10',
-          isPrebuilt: true,
-        },
-        {
-          id: 'pool-education',
-          name: "Master's Degree & Global Certification",
-          categoryTag: 'Education',
-          icon: '🎓',
-          currency: 'USD',
-          targetAmount: 8000.0,
-          currentAmount: 2400.0,
-          targetDate: '2027-09-01',
-          description: 'Tuition fees, academic textbooks, international exam certification & materials.',
-          createdAt: '2026-04-05',
-          isPrebuilt: true,
-        },
-        {
-          id: 'pool-business',
-          name: 'Startup Capital & Expansion Fund',
-          categoryTag: 'Business',
-          icon: '💼',
-          currency: 'IDR',
-          targetAmount: 50000000,
-          currentAmount: 15000000,
-          targetDate: '2027-08-31',
-          description: 'Initial seed capital for SaaS product infrastructure, marketing, and legal incorporation.',
-          createdAt: '2026-05-20',
-          isPrebuilt: true,
-        },
-      ];
+      // Clean Initial Savings Goals with 0 current saved amount
+      function getInitialCleanSavingsPools() {
+        return [
+          {
+            id: 'pool-marriage',
+            name: 'Dream Wedding & Reception',
+            categoryTag: 'Marriage',
+            icon: '💒',
+            currency: 'IDR',
+            targetAmount: 75000000,
+            currentAmount: 0,
+            targetDate: '2027-12-31',
+            description: 'Venue, catering, attire, documentation, and celebration fund for our dream wedding.',
+            createdAt: '2026-01-15',
+            isPrebuilt: true,
+          },
+          {
+            id: 'pool-house',
+            name: 'Home Down Payment (DP Rumah)',
+            categoryTag: 'House',
+            icon: '🏠',
+            currency: 'IDR',
+            targetAmount: 150000000,
+            currentAmount: 0,
+            targetDate: '2028-06-30',
+            description: '20% down payment fund for landed residential property in South Tangerang / BSD.',
+            createdAt: '2026-02-01',
+            isPrebuilt: true,
+          },
+          {
+            id: 'pool-vehicle',
+            name: 'Electric Vehicle (EV) Down Payment',
+            categoryTag: 'Vehicle',
+            icon: '🚗',
+            currency: 'IDR',
+            targetAmount: 45000000,
+            currentAmount: 0,
+            targetDate: '2027-04-30',
+            description: 'Down payment for daily electric commute vehicle and home fast charger installation.',
+            createdAt: '2026-03-10',
+            isPrebuilt: true,
+          },
+          {
+            id: 'pool-education',
+            name: "Master's Degree & Global Certification",
+            categoryTag: 'Education',
+            icon: '🎓',
+            currency: 'USD',
+            targetAmount: 8000.0,
+            currentAmount: 0,
+            targetDate: '2027-09-01',
+            description: 'Tuition fees, academic textbooks, international exam certification & materials.',
+            createdAt: '2026-04-05',
+            isPrebuilt: true,
+          },
+          {
+            id: 'pool-business',
+            name: 'Startup Capital & Expansion Fund',
+            categoryTag: 'Business',
+            icon: '💼',
+            currency: 'IDR',
+            targetAmount: 50000000,
+            currentAmount: 0,
+            targetDate: '2027-08-31',
+            description: 'Initial seed capital for SaaS product infrastructure, marketing, and legal incorporation.',
+            createdAt: '2026-05-20',
+            isPrebuilt: true,
+          },
+        ];
+      }
 
-      const INITIAL_ACCOUNTS = [
-        {
-          id: 'acc-1',
-          name: 'BCA Main Account',
-          currency: 'IDR',
-          type: 'BANK_CARD',
-          balance: 24500000,
-          monthlyFee: 15000,
-        },
-        {
-          id: 'acc-2',
-          name: 'Mandiri Savings',
-          currency: 'IDR',
-          type: 'BANK_CARD',
-          balance: 12800000,
-          monthlyFee: 12500,
-        },
-        {
-          id: 'acc-3',
-          name: 'GoPay / OVO Wallet',
-          currency: 'IDR',
-          type: 'E_WALLET',
-          balance: 1450000,
-          monthlyFee: 0,
-        },
-        {
-          id: 'acc-4',
-          name: 'Cash (IDR)',
-          currency: 'IDR',
-          type: 'CASH',
-          balance: 850000,
-          monthlyFee: 0,
-        },
-        {
-          id: 'acc-5',
-          name: 'Wise USD Borderless',
-          currency: 'USD',
-          type: 'BANK_CARD',
-          balance: 3450.0,
-          monthlyFee: 0,
-        },
-        {
-          id: 'acc-6',
-          name: 'Interactive Brokers',
-          currency: 'USD',
-          type: 'E_WALLET',
-          balance: 7800.0,
-          monthlyFee: 0,
-        },
-        {
-          id: 'acc-7',
-          name: 'Emergency Cash USD',
-          currency: 'USD',
-          type: 'CASH',
-          balance: 600.0,
-          monthlyFee: 0,
-        },
-      ];
+      // Clean Initial Accounts with $0 / Rp 0 initial balances
+      function getInitialCleanAccounts() {
+        return [
+          {
+            id: 'acc-1',
+            name: 'BCA Main Account',
+            currency: 'IDR',
+            type: 'BANK_CARD',
+            balance: 0,
+            monthlyFee: 15000,
+          },
+          {
+            id: 'acc-2',
+            name: 'Mandiri Savings',
+            currency: 'IDR',
+            type: 'BANK_CARD',
+            balance: 0,
+            monthlyFee: 12500,
+          },
+          {
+            id: 'acc-3',
+            name: 'GoPay / OVO Wallet',
+            currency: 'IDR',
+            type: 'E_WALLET',
+            balance: 0,
+            monthlyFee: 0,
+          },
+          {
+            id: 'acc-4',
+            name: 'Cash (IDR)',
+            currency: 'IDR',
+            type: 'CASH',
+            balance: 0,
+            monthlyFee: 0,
+          },
+          {
+            id: 'acc-5',
+            name: 'Wise USD Borderless',
+            currency: 'USD',
+            type: 'BANK_CARD',
+            balance: 0,
+            monthlyFee: 0,
+          },
+          {
+            id: 'acc-6',
+            name: 'Interactive Brokers',
+            currency: 'USD',
+            type: 'E_WALLET',
+            balance: 0,
+            monthlyFee: 0,
+          },
+          {
+            id: 'acc-7',
+            name: 'Emergency Cash USD',
+            currency: 'USD',
+            type: 'CASH',
+            balance: 0,
+            monthlyFee: 0,
+          },
+        ];
+      }
 
-      const INITIAL_TRANSACTIONS = [
-        {
-          id: 'tx-1',
-          date: '2026-09-01',
-          type: 'INCOME',
-          category: 'Salary',
-          description: 'Monthly Engineering Salary Payout',
-          accountId: 'acc-1',
-          currency: 'IDR',
-          amount: 28000000,
-        },
-        {
-          id: 'tx-2',
-          date: '2026-09-03',
-          type: 'EXPENSE',
-          category: 'Housing & Utilities',
-          description: 'Apartment Maintenance & Electricity',
-          accountId: 'acc-1',
-          currency: 'IDR',
-          amount: 2400000,
-        },
-        {
-          id: 'tx-3',
-          date: '2026-09-08',
-          type: 'EXPENSE',
-          category: 'Food & Dining',
-          description: 'Weekly Grocery Shopping at Ranch Market',
-          accountId: 'acc-3',
-          currency: 'IDR',
-          amount: 650000,
-        },
-        {
-          id: 'tx-4',
-          date: '2026-09-12',
-          type: 'TRANSFER',
-          category: 'Transfer',
-          description: 'Top-up E-Wallet for daily commute',
-          fromAccountId: 'acc-1',
-          toAccountId: 'acc-3',
-          currency: 'IDR',
-          amount: 1000000,
-        },
-        {
-          id: 'tx-5',
-          date: '2026-09-15',
-          type: 'CROSS_TRANSFER',
-          category: 'Exchange Transfer',
-          description: 'USD Conversion for Wise Account (Rate 16,000)',
-          fromAccountId: 'acc-1',
-          toAccountId: 'acc-5',
-          sourceCurrency: 'IDR',
-          targetCurrency: 'USD',
-          sourceAmount: 16000000,
-          targetAmount: 1000.0,
-          exchangeRate: 16000,
-          currency: 'IDR', // Primary ledger tag
-          amount: 16000000,
-        },
-        {
-          id: 'tx-6',
-          date: '2026-09-18',
-          type: 'INCOME',
-          category: 'Investment & Freelance',
-          description: 'International Consulting Retainer',
-          accountId: 'acc-5',
-          currency: 'USD',
-          amount: 2200.0,
-        },
-        {
-          id: 'tx-7',
-          date: '2026-09-20',
-          type: 'EXPENSE',
-          category: 'Software & Subscriptions',
-          description: 'Cloud Server & Domain Renewals',
-          accountId: 'acc-5',
-          currency: 'USD',
-          amount: 145.0,
-        },
-      ];
+      // Completely empty transactions list (no mock transactions)
+      const INITIAL_TRANSACTIONS = [];
+      const INITIAL_ACCOUNTS = getInitialCleanAccounts();
+      const INITIAL_SAVINGS_POOLS = getInitialCleanSavingsPools();
 
       const DEFAULT_CATEGORIES = {
         INCOME: ['Salary', 'Investment & Freelance', 'Business', 'Gifts & Bonus', 'Savings Withdrawal', 'Other Income'],
@@ -3047,6 +3193,8 @@
           'Software & Subscriptions',
           'Health & Medical',
           'Bank Administration Fee',
+          'Transfer',
+          'E-Wallet Top-Up',
           'Savings Deposit',
           'Other Expense',
         ],
@@ -3062,7 +3210,7 @@
       let categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
       let currentCategoryGroup = 'EXPENSE';
       let savingsPools = [];
-      let currentWorkspace = localStorage.getItem('ft_active_workspace') || 'main';
+      let currentWorkspace = localStorage.getItem('fathirridha_active_workspace_v1') || localStorage.getItem('ft_active_workspace') || 'main';
       let savingsCurrencyFilter = 'ALL';
       let savingsCategoryFilter = 'ALL';
       let savingsSearchQuery = '';
@@ -3070,60 +3218,232 @@
 
       function loadData() {
         try {
-          const rawAccounts = localStorage.getItem(STORAGE_KEY_ACCOUNTS);
-          const rawTx = localStorage.getItem(STORAGE_KEY_TRANSACTIONS);
-          const rawSettings = localStorage.getItem(STORAGE_KEY_SETTINGS);
+          const rawUnified = localStorage.getItem(STORAGE_KEY_UNIFIED);
+          if (rawUnified) {
+            const parsed = JSON.parse(rawUnified);
+            accounts = Array.isArray(parsed.accounts) ? parsed.accounts : getInitialCleanAccounts();
+            transactions = Array.isArray(parsed.transactions) ? parsed.transactions : [];
+            savingsPools = Array.isArray(parsed.savingsPools) ? parsed.savingsPools : getInitialCleanSavingsPools();
+            categories = parsed.categories || JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+            settings = { ...DEFAULT_SETTINGS, ...(parsed.settings || {}) };
+            if (parsed.currentWorkspace) currentWorkspace = parsed.currentWorkspace;
+            return;
+          }
+
+          // Check legacy keys (including nusantara_* to ensure no data is invalidated from Vercel deployments)
+          const rawAccounts = localStorage.getItem(STORAGE_KEY_ACCOUNTS) || localStorage.getItem('nusantara_accounts_v1');
+          const rawTx = localStorage.getItem(STORAGE_KEY_TRANSACTIONS) || localStorage.getItem('nusantara_transactions_v1');
+          const rawSettings = localStorage.getItem(STORAGE_KEY_SETTINGS) || localStorage.getItem('nusantara_settings_v1');
           const rawCategories = localStorage.getItem(STORAGE_KEY_CATEGORIES);
           const rawPools = localStorage.getItem(STORAGE_KEY_SAVINGS_POOLS);
-          const rawWorkspace = localStorage.getItem(STORAGE_KEY_ACTIVE_WORKSPACE);
+          const rawWorkspace = localStorage.getItem(STORAGE_KEY_ACTIVE_WORKSPACE) || localStorage.getItem('ft_active_workspace');
 
-          accounts = rawAccounts ? JSON.parse(rawAccounts) : [...INITIAL_ACCOUNTS];
-          transactions = rawTx ? JSON.parse(rawTx) : [...INITIAL_TRANSACTIONS];
-          savingsPools = rawPools ? JSON.parse(rawPools) : JSON.parse(JSON.stringify(INITIAL_SAVINGS_POOLS));
-          if (rawWorkspace) currentWorkspace = rawWorkspace;
+          if (rawAccounts || rawTx || rawPools || rawCategories) {
+            accounts = rawAccounts ? JSON.parse(rawAccounts) : getInitialCleanAccounts();
+            transactions = rawTx ? JSON.parse(rawTx) : [];
+            savingsPools = rawPools ? JSON.parse(rawPools) : getInitialCleanSavingsPools();
+            if (rawWorkspace) currentWorkspace = rawWorkspace;
+            if (rawSettings) settings = { ...DEFAULT_SETTINGS, ...JSON.parse(rawSettings) };
+            if (rawCategories) {
+              categories = JSON.parse(rawCategories);
+            } else {
+              categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+            }
+            // Migrate to unified key
+            localStorage.setItem(STORAGE_KEY_UNIFIED, JSON.stringify({
+              accounts,
+              transactions,
+              savingsPools,
+              categories,
+              settings,
+              currentWorkspace,
+              updatedAt: new Date().toISOString(),
+            }));
+            return;
+          }
 
-          if (rawSettings) {
-            settings = { ...DEFAULT_SETTINGS, ...JSON.parse(rawSettings) };
-          }
-          if (rawCategories) {
-            categories = JSON.parse(rawCategories);
-            // Ensure all keys exist
-            if (!categories.INCOME) categories.INCOME = [...DEFAULT_CATEGORIES.INCOME];
-            if (!categories.EXPENSE) categories.EXPENSE = [...DEFAULT_CATEGORIES.EXPENSE];
-            if (!categories.TRANSFER) categories.TRANSFER = [...DEFAULT_CATEGORIES.TRANSFER];
-            if (!categories.INCOME.includes('Savings Withdrawal')) categories.INCOME.push('Savings Withdrawal');
-            if (!categories.EXPENSE.includes('Savings Deposit')) categories.EXPENSE.push('Savings Deposit');
-          } else {
-            categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
-          }
+          // Completely empty localStorage on fresh device or first visit
+          accounts = getInitialCleanAccounts();
+          transactions = [];
+          savingsPools = getInitialCleanSavingsPools();
+          categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+          settings = { ...DEFAULT_SETTINGS };
+          localStorage.setItem(STORAGE_KEY_UNIFIED, JSON.stringify({
+            accounts,
+            transactions,
+            savingsPools,
+            categories,
+            settings,
+            currentWorkspace,
+            updatedAt: new Date().toISOString(),
+          }));
         } catch (e) {
           console.error('Error loading state from localStorage:', e);
-          accounts = [...INITIAL_ACCOUNTS];
-          transactions = [...INITIAL_TRANSACTIONS];
-          savingsPools = JSON.parse(JSON.stringify(INITIAL_SAVINGS_POOLS));
+          accounts = getInitialCleanAccounts();
+          transactions = [];
+          savingsPools = getInitialCleanSavingsPools();
           settings = { ...DEFAULT_SETTINGS };
           categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
         }
       }
 
-      let cloudWriteDebounceTimer = null;
-
       function saveData() {
-        // When user is authenticated via Firebase Auth, write update to doc(db, 'users', user.uid)
-        // and completely bypass / remove localStorage fallback
-        if (currentUser && currentUser.uid) {
-          if (isRemoteUpdating) return;
-          writeStateToFirestore();
-          return;
+        const payload = {
+          accounts,
+          transactions,
+          savingsPools,
+          categories,
+          settings,
+          currentWorkspace,
+          updatedAt: new Date().toISOString(),
+        };
+
+        // Always persist to unified consistent localStorage key
+        try {
+          localStorage.setItem(STORAGE_KEY_UNIFIED, JSON.stringify(payload));
+          localStorage.setItem(STORAGE_KEY_ACCOUNTS, JSON.stringify(accounts));
+          localStorage.setItem(STORAGE_KEY_TRANSACTIONS, JSON.stringify(transactions));
+          localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
+          localStorage.setItem(STORAGE_KEY_CATEGORIES, JSON.stringify(categories));
+          localStorage.setItem(STORAGE_KEY_SAVINGS_POOLS, JSON.stringify(savingsPools));
+          localStorage.setItem(STORAGE_KEY_ACTIVE_WORKSPACE, currentWorkspace);
+        } catch (err) {
+          console.warn('Failed saving to localStorage:', err);
         }
 
-        // Local offline fallback only when user is NOT logged in
-        localStorage.setItem(STORAGE_KEY_ACCOUNTS, JSON.stringify(accounts));
-        localStorage.setItem(STORAGE_KEY_TRANSACTIONS, JSON.stringify(transactions));
-        localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
-        localStorage.setItem(STORAGE_KEY_CATEGORIES, JSON.stringify(categories));
-        localStorage.setItem(STORAGE_KEY_SAVINGS_POOLS, JSON.stringify(savingsPools));
-        localStorage.setItem(STORAGE_KEY_ACTIVE_WORKSPACE, currentWorkspace);
+        // When user is authenticated with Google Auth, synchronize state with Firestore
+        if (currentUser && currentUser.uid) {
+          if (isRemoteUpdating || !hasCheckedInitialData) return;
+          writeStateToFirestore();
+        }
+      }
+
+      /**
+       * Robust Deep Merge Engine:
+       * Ensures existing online data is NEVER overwritten by an uninitialized/empty
+       * local state on fresh device logins.
+       */
+      function deepMergeOnlineAndLocal(remote, local) {
+        if (!remote || typeof remote !== 'object') {
+          return {
+            accounts: local.accounts || getInitialCleanAccounts(),
+            transactions: local.transactions || [],
+            savingsPools: local.savingsPools || getInitialCleanSavingsPools(),
+            categories: local.categories || JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+            settings: local.settings || { ...DEFAULT_SETTINGS },
+            hasOfflineChangesToPush: false,
+          };
+        }
+
+        const remoteAccounts = Array.isArray(remote.accounts) ? remote.accounts : [];
+        const remoteTransactions = Array.isArray(remote.transactions) ? remote.transactions : [];
+        const remotePools = Array.isArray(remote.savingsPools) ? remote.savingsPools : [];
+        const remoteCategories = remote.categories && typeof remote.categories === 'object' ? remote.categories : null;
+        const remoteSettings = remote.settings && typeof remote.settings === 'object' ? remote.settings : null;
+
+        // Check whether local state is clean/uninitialized/empty
+        const isLocalEmpty =
+          (!local.transactions || local.transactions.length === 0) &&
+          (!local.accounts || local.accounts.every((a) => !a.balance || Number(a.balance) === 0)) &&
+          (!local.savingsPools || local.savingsPools.every((p) => !p.currentAmount || Number(p.currentAmount) === 0));
+
+        // If local is clean/uninitialized or has no recorded transactions, remote online data takes full precedence!
+        if (isLocalEmpty) {
+          return {
+            accounts: remoteAccounts.length > 0 ? remoteAccounts : (local.accounts || getInitialCleanAccounts()),
+            transactions: remoteTransactions,
+            savingsPools: remotePools.length > 0 ? remotePools : (local.savingsPools || getInitialCleanSavingsPools()),
+            categories: remoteCategories || local.categories || JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+            settings: remoteSettings ? { ...DEFAULT_SETTINGS, ...remoteSettings } : (local.settings || { ...DEFAULT_SETTINGS }),
+            hasOfflineChangesToPush: false,
+          };
+        }
+
+        // If local had real offline entries before signing in, perform deep union
+        // 1. Transactions: Merge by ID
+        const txMap = new Map();
+        remoteTransactions.forEach((tx) => {
+          if (tx && tx.id) txMap.set(tx.id, tx);
+        });
+        let hasNewOfflineTx = false;
+        (local.transactions || []).forEach((tx) => {
+          if (tx && tx.id) {
+            if (!txMap.has(tx.id)) {
+              txMap.set(tx.id, tx);
+              hasNewOfflineTx = true;
+            }
+          }
+        });
+        const mergedTransactions = Array.from(txMap.values());
+        mergedTransactions.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+        // 2. Accounts: Merge by ID
+        const accMap = new Map();
+        remoteAccounts.forEach((acc) => {
+          if (acc && acc.id) accMap.set(acc.id, { ...acc });
+        });
+        (local.accounts || []).forEach((localAcc) => {
+          if (localAcc && localAcc.id) {
+            if (!accMap.has(localAcc.id)) {
+              accMap.set(localAcc.id, { ...localAcc });
+              hasNewOfflineTx = true;
+            } else {
+              const existing = accMap.get(localAcc.id);
+              if ((!existing.balance || existing.balance === 0) && localAcc.balance !== 0) {
+                existing.balance = localAcc.balance;
+              }
+            }
+          }
+        });
+        const mergedAccounts = Array.from(accMap.values());
+
+        // 3. Savings Pools: Merge by ID
+        const poolMap = new Map();
+        remotePools.forEach((p) => {
+          if (p && p.id) poolMap.set(p.id, { ...p });
+        });
+        (local.savingsPools || []).forEach((localPool) => {
+          if (localPool && localPool.id) {
+            if (!poolMap.has(localPool.id)) {
+              poolMap.set(localPool.id, { ...localPool });
+            } else {
+              const existing = poolMap.get(localPool.id);
+              if ((!existing.currentAmount || existing.currentAmount === 0) && localPool.currentAmount > 0) {
+                existing.currentAmount = localPool.currentAmount;
+              }
+            }
+          }
+        });
+        const mergedPools = Array.from(poolMap.values());
+
+        // 4. Categories: Union sets
+        const mergedCategories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+        ['INCOME', 'EXPENSE', 'TRANSFER'].forEach((group) => {
+          const set = new Set(DEFAULT_CATEGORIES[group]);
+          if (remoteCategories && Array.isArray(remoteCategories[group])) {
+            remoteCategories[group].forEach((c) => set.add(c));
+          }
+          if (local.categories && Array.isArray(local.categories[group])) {
+            local.categories[group].forEach((c) => set.add(c));
+          }
+          mergedCategories[group] = Array.from(set);
+        });
+
+        // 5. Settings: Merge
+        const mergedSettings = {
+          ...DEFAULT_SETTINGS,
+          ...(local.settings || {}),
+          ...(remoteSettings || {}),
+        };
+
+        return {
+          accounts: mergedAccounts,
+          transactions: mergedTransactions,
+          savingsPools: mergedPools,
+          categories: mergedCategories,
+          settings: mergedSettings,
+          hasOfflineChangesToPush: hasNewOfflineTx,
+        };
       }
 
       // ==========================================
@@ -3555,7 +3875,17 @@
           }
 
           // Type filter
-          if (typeFilter !== 'ALL' && tx.type !== typeFilter) return false;
+          if (typeFilter !== 'ALL') {
+            if (typeFilter === 'EXPENSE_NORMAL') {
+              if (tx.type !== 'EXPENSE' || (tx.subType && tx.subType !== 'NORMAL')) return false;
+            } else if (typeFilter === 'EXPENSE_TRANSFER') {
+              if (tx.type !== 'EXPENSE' || tx.subType !== 'TRANSFER') return false;
+            } else if (typeFilter === 'EXPENSE_TOPUP') {
+              if (tx.type !== 'EXPENSE' || tx.subType !== 'TOPUP') return false;
+            } else if (tx.type !== typeFilter) {
+              return false;
+            }
+          }
 
           // Account filter
           if (accountFilter !== 'ALL') {
@@ -3593,8 +3923,18 @@
         // Sort descending by date, then id
         filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        if (filtered.length === 0) {
+        if (transactions.length === 0) {
           emptyState.classList.remove('hidden');
+          const emptyTitle = document.getElementById('tx-empty-state-title');
+          const emptyDesc = document.getElementById('tx-empty-state-desc');
+          if (emptyTitle) emptyTitle.textContent = 'No transactions recorded yet';
+          if (emptyDesc) emptyDesc.textContent = 'Get started by recording your first transaction using "+ New Entry" above.';
+        } else if (filtered.length === 0) {
+          emptyState.classList.remove('hidden');
+          const emptyTitle = document.getElementById('tx-empty-state-title');
+          const emptyDesc = document.getElementById('tx-empty-state-desc');
+          if (emptyTitle) emptyTitle.textContent = 'No transactions match filters';
+          if (emptyDesc) emptyDesc.textContent = 'Try adjusting your search query, type, or date period filter above.';
         } else {
           emptyState.classList.add('hidden');
         }
@@ -3617,8 +3957,19 @@
             amountColorClass = 'text-emerald-600 dark:text-emerald-400';
             amountSign = '+';
           } else if (tx.type === 'EXPENSE') {
-            typeLabel = 'Expense';
-            badgeClass = 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200 dark:border-rose-800/50';
+            if (tx.subType === 'TRANSFER') {
+              typeLabel = 'Transfer Exp';
+              badgeClass = 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800/60';
+            } else if (tx.subType === 'TOPUP') {
+              typeLabel = 'Top-Up Exp';
+              badgeClass = 'bg-cyan-50 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800/60';
+            } else if (tx.isAutoFee) {
+              typeLabel = 'Admin Fee';
+              badgeClass = 'bg-orange-50 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300 border border-orange-300 dark:border-orange-800/60';
+            } else {
+              typeLabel = 'Expense';
+              badgeClass = 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200 dark:border-rose-800/50';
+            }
             amountColorClass = 'text-rose-600 dark:text-rose-400';
             amountSign = '-';
           } else if (tx.type === 'TRANSFER') {
@@ -3661,7 +4012,21 @@
             `;
           } else {
             const currency = tx.currency || (getAccount(tx.accountId) ? getAccount(tx.accountId).currency : 'IDR');
-            amountFormatted = `<span class="font-mono font-bold tabular-nums ${amountColorClass}">${amountSign}${formatMoney(tx.amount, currency)}</span>`;
+            let feeNote = '';
+            if (tx.adminFee && tx.adminFee > 0) {
+              feeNote = `<div class="text-[10px] text-amber-600 dark:text-amber-400 font-mono font-medium">+ Fee ${formatMoney(tx.adminFee, currency)}</div>`;
+            }
+            amountFormatted = `
+              <div class="text-right">
+                <span class="font-mono font-bold tabular-nums ${amountColorClass}">${amountSign}${formatMoney(tx.amount, currency)}</span>
+                ${feeNote}
+              </div>
+            `;
+          }
+
+          let feeBadge = '';
+          if (tx.isAutoFee) {
+            feeBadge = `<span class="ml-1 px-1.5 py-0.5 rounded text-[9px] font-mono bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border border-orange-200 dark:border-orange-800/40 whitespace-nowrap">Auto Fee</span>`;
           }
 
           row.innerHTML = `
@@ -3671,8 +4036,8 @@
             <td class="py-3 px-4 whitespace-nowrap">
               <span class="px-2 py-0.5 rounded text-[10px] font-medium ${badgeClass}">${typeLabel}</span>
             </td>
-            <td class="py-3 px-4 font-medium text-slate-900 dark:text-white max-w-[200px] truncate" title="${escapeHtml(tx.description)}">
-              ${escapeHtml(tx.description)}
+            <td class="py-3 px-4 font-medium text-slate-900 dark:text-white max-w-[210px] truncate" title="${escapeHtml(tx.description)}">
+              <span>${escapeHtml(tx.description)}</span>${feeBadge}
             </td>
             <td class="py-3 px-4 text-slate-600 dark:text-slate-300 whitespace-nowrap">
               ${escapeHtml(tx.category || '-')}
@@ -3871,6 +4236,89 @@
       // ==========================================
       // TRANSACTION MODAL & ACTIONS
       // ==========================================
+      function updateAdminFeeCurrencyLabels() {
+        const accId = document.getElementById('tx-account') ? document.getElementById('tx-account').value : null;
+        const acc = accId ? getAccount(accId) : null;
+        const cur = acc ? acc.currency : (settings.currencyView === 'USD' ? 'USD' : 'IDR');
+        const label = document.getElementById('tx-admin-fee-currency-label');
+        if (label) label.textContent = cur === 'IDR' ? '(Rp)' : '($)';
+
+        const btn1 = document.getElementById('preset-fee-btn-1');
+        const btn2 = document.getElementById('preset-fee-btn-2');
+        const btnZero = document.getElementById('preset-fee-btn-zero');
+
+        if (cur === 'USD') {
+          if (btn1) {
+            btn1.textContent = '+ $0.25';
+            btn1.setAttribute('onclick', 'setPresetAdminFee(0.25)');
+          }
+          if (btn2) {
+            btn2.textContent = '+ $0.50';
+            btn2.setAttribute('onclick', 'setPresetAdminFee(0.50)');
+          }
+          if (btnZero) {
+            btnZero.textContent = '$0';
+            btnZero.setAttribute('onclick', 'setPresetAdminFee(0)');
+          }
+        } else {
+          if (btn1) {
+            btn1.textContent = '+ Rp 2,500';
+            btn1.setAttribute('onclick', 'setPresetAdminFee(2500)');
+          }
+          if (btn2) {
+            btn2.textContent = '+ Rp 6,500';
+            btn2.setAttribute('onclick', 'setPresetAdminFee(6500)');
+          }
+          if (btnZero) {
+            btnZero.textContent = 'Rp 0';
+            btnZero.setAttribute('onclick', 'setPresetAdminFee(0)');
+          }
+        }
+      }
+
+      function setPresetAdminFee(val) {
+        const feeInput = document.getElementById('tx-admin-fee');
+        if (feeInput) feeInput.value = val;
+      }
+
+      function handleExpenseSubTypeChange() {
+        const primaryType = document.getElementById('tx-type') ? document.getElementById('tx-type').value : 'EXPENSE';
+        const subTypeSelect = document.getElementById('tx-expense-subtype');
+        const subType = subTypeSelect ? subTypeSelect.value : 'NORMAL';
+        const adminFeeGroup = document.getElementById('tx-admin-fee-group');
+        const catSelect = document.getElementById('tx-category');
+
+        if (primaryType !== 'EXPENSE') {
+          if (adminFeeGroup) adminFeeGroup.classList.add('hidden');
+          return;
+        }
+
+        if (subType === 'TRANSFER' || subType === 'TOPUP') {
+          if (adminFeeGroup) adminFeeGroup.classList.remove('hidden');
+          updateAdminFeeCurrencyLabels();
+
+          // Auto-select category if default or empty
+          if (subType === 'TRANSFER') {
+            if (catSelect && Array.from(catSelect.options).some((o) => o.value === 'Transfer')) {
+              if (!catSelect.value || catSelect.value === 'Food & Dining' || catSelect.value === 'Other Expense') {
+                catSelect.value = 'Transfer';
+              }
+            }
+          } else if (subType === 'TOPUP') {
+            if (catSelect && Array.from(catSelect.options).some((o) => o.value === 'E-Wallet Top-Up')) {
+              if (!catSelect.value || catSelect.value === 'Food & Dining' || catSelect.value === 'Other Expense') {
+                catSelect.value = 'E-Wallet Top-Up';
+              }
+            }
+          }
+        } else {
+          // Normal Expense
+          if (adminFeeGroup) adminFeeGroup.classList.add('hidden');
+          const feeInput = document.getElementById('tx-admin-fee');
+          if (feeInput) feeInput.value = '';
+        }
+      }
+
       function openTransactionModal(defaultType = null) {
         const modal = document.getElementById('tx-modal');
         const form = document.getElementById('tx-form');
@@ -3879,6 +4327,13 @@
         document.getElementById('tx-id').value = '';
         document.getElementById('tx-modal-title').textContent = 'Record Transaction';
         document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+
+        const subTypeSelect = document.getElementById('tx-expense-subtype');
+        if (subTypeSelect) subTypeSelect.value = 'NORMAL';
+        const feeInput = document.getElementById('tx-admin-fee');
+        if (feeInput) feeInput.value = '';
+        const adminFeeGroup = document.getElementById('tx-admin-fee-group');
+        if (adminFeeGroup) adminFeeGroup.classList.add('hidden');
 
         let targetType = defaultType || 'EXPENSE';
         setTxType(targetType);
@@ -3932,8 +4387,20 @@
         const standardAmountGroup = document.getElementById('tx-amount-standard-group');
         const crossGroup = document.getElementById('tx-cross-group');
         const categoryGroup = document.getElementById('tx-category-group');
+        const expenseSubTypeGroup = document.getElementById('tx-expense-subtype-group');
+        const adminFeeGroup = document.getElementById('tx-admin-fee-group');
 
         populateCategoryDropdown(type);
+
+        if (type === 'EXPENSE') {
+          if (expenseSubTypeGroup) expenseSubTypeGroup.classList.remove('hidden');
+          handleExpenseSubTypeChange();
+        } else {
+          if (expenseSubTypeGroup) expenseSubTypeGroup.classList.add('hidden');
+          if (adminFeeGroup) adminFeeGroup.classList.add('hidden');
+          const feeInput = document.getElementById('tx-admin-fee');
+          if (feeInput) feeInput.value = '';
+        }
 
         if (type === 'INCOME' || type === 'EXPENSE') {
           singleAccGroup.classList.remove('hidden');
@@ -3988,6 +4455,7 @@
         if (acc) {
           label.textContent = acc.currency === 'IDR' ? '(Rp)' : '($)';
         }
+        updateAdminFeeCurrencyLabels();
       }
 
       function calculateCrossAmounts(trigger = 'source') {
@@ -4045,6 +4513,9 @@
           description,
         };
 
+        let expenseSubType = 'NORMAL';
+        let adminFee = 0;
+
         if (type === 'INCOME' || type === 'EXPENSE') {
           const accountId = document.getElementById('tx-account').value;
           const acc = getAccount(accountId);
@@ -4060,6 +4531,20 @@
           newTx.accountId = accountId;
           newTx.currency = acc.currency;
           newTx.amount = amount;
+
+          if (type === 'EXPENSE') {
+            expenseSubType = document.getElementById('tx-expense-subtype')
+              ? document.getElementById('tx-expense-subtype').value
+              : 'NORMAL';
+            newTx.subType = expenseSubType;
+
+            if (expenseSubType === 'TRANSFER' || expenseSubType === 'TOPUP') {
+              adminFee = parseFloat(document.getElementById('tx-admin-fee').value) || 0;
+              if (adminFee > 0) {
+                newTx.adminFee = adminFee;
+              }
+            }
+          }
         } else if (type === 'TRANSFER') {
           const fromAccountId = document.getElementById('tx-from-account').value;
           const toAccountId = document.getElementById('tx-to-account').value;
@@ -4128,9 +4613,41 @@
           const existingTx = transactions.find((t) => t.id === txId);
           if (existingTx) {
             applyTxToBalance(existingTx, true); // true = reverse
+
+            // If existingTx had a linked fee transaction, reverse and remove it
+            if (existingTx.linkedFeeId) {
+              const oldFeeTx = transactions.find((t) => t.id === existingTx.linkedFeeId);
+              if (oldFeeTx) {
+                applyTxToBalance(oldFeeTx, true);
+                transactions = transactions.filter((t) => t.id !== existingTx.linkedFeeId);
+              }
+            }
           }
 
-          // 2. Update tx and apply new balance effect
+          // 2. If new admin fee > 0, generate and link fee transaction
+          if (type === 'EXPENSE' && adminFee > 0) {
+            const feeTxId = 'tx-fee-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+            newTx.linkedFeeId = feeTxId;
+            const feeTx = {
+              id: feeTxId,
+              date,
+              type: 'EXPENSE',
+              category: 'Bank Administration Fee',
+              description: `Bank Admin Fee: ${description || (expenseSubType === 'TOPUP' ? 'E-Wallet Top-Up' : 'Transfer')}`,
+              accountId: newTx.accountId,
+              currency: newTx.currency,
+              amount: adminFee,
+              isAutoFee: true,
+              linkedParentId: newTx.id,
+            };
+            transactions.unshift(feeTx);
+            applyTxToBalance(feeTx, false);
+          } else {
+            newTx.linkedFeeId = null;
+            newTx.adminFee = 0;
+          }
+
+          // 3. Update primary tx and apply new balance effect
           const index = transactions.findIndex((t) => t.id === txId);
           if (index !== -1) {
             transactions[index] = newTx;
@@ -4139,9 +4656,31 @@
           showToast('Transaction edited & balances adjusted', 'success');
         } else {
           // CREATE: Add new tx and apply effect
+          // If admin fee > 0, create fee tx and link
+          if (type === 'EXPENSE' && adminFee > 0) {
+            const feeTxId = 'tx-fee-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+            newTx.linkedFeeId = feeTxId;
+            const feeTx = {
+              id: feeTxId,
+              date,
+              type: 'EXPENSE',
+              category: 'Bank Administration Fee',
+              description: `Bank Admin Fee: ${description || (expenseSubType === 'TOPUP' ? 'E-Wallet Top-Up' : 'Transfer')}`,
+              accountId: newTx.accountId,
+              currency: newTx.currency,
+              amount: adminFee,
+              isAutoFee: true,
+              linkedParentId: newTx.id,
+            };
+            transactions.unshift(feeTx);
+            applyTxToBalance(feeTx, false);
+          }
+
           transactions.unshift(newTx);
           applyTxToBalance(newTx, false);
-          showToast('Transaction recorded & balance updated', 'success');
+
+          const feeMsg = adminFee > 0 ? ` (+ ${formatMoney(adminFee, newTx.currency)} Admin Fee)` : '';
+          showToast(`Transaction recorded & balance updated${feeMsg}`, 'success');
         }
 
         saveData();
@@ -4168,6 +4707,25 @@
           document.getElementById('tx-category').value = tx.category;
           document.getElementById('tx-amount').value = tx.amount;
           handleTxAccountChange();
+
+          if (tx.type === 'EXPENSE') {
+            const subTypeSelect = document.getElementById('tx-expense-subtype');
+            if (subTypeSelect) {
+              subTypeSelect.value = tx.subType || 'NORMAL';
+            }
+            handleExpenseSubTypeChange();
+
+            // Populate admin fee if present
+            const feeInput = document.getElementById('tx-admin-fee');
+            if (feeInput) {
+              let feeVal = tx.adminFee || 0;
+              if (!feeVal && tx.linkedFeeId) {
+                const linked = transactions.find((t) => t.id === tx.linkedFeeId);
+                if (linked) feeVal = linked.amount || 0;
+              }
+              feeInput.value = feeVal > 0 ? feeVal : '';
+            }
+          }
         } else if (tx.type === 'TRANSFER') {
           document.getElementById('tx-from-account').value = tx.fromAccountId;
           updateTransferAccountOptions();
@@ -4191,12 +4749,35 @@
         const tx = transactions.find((t) => t.id === id);
         if (!tx) return;
 
+        const hasFee = Boolean(tx.linkedFeeId);
+        const confirmMsg = hasFee
+          ? `Are you sure you want to delete this transaction "${escapeHtml(tx.description)}"? Its linked Bank Administration Fee entry and both account deductions will be automatically reversed and adjusted.`
+          : `Are you sure you want to delete this transaction "${escapeHtml(tx.description)}"? The associated account balances will be automatically recalculated and adjusted.`;
+
         openConfirmModal(
           'Delete Transaction',
-          `Are you sure you want to delete this transaction "${escapeHtml(tx.description)}"? The associated account balances will be automatically recalculated and adjusted.`,
+          confirmMsg,
           () => {
             // Reconcile balances by reversing this transaction
             applyTxToBalance(tx, true);
+
+            // If there's a linked fee transaction, reverse it as well
+            if (tx.linkedFeeId) {
+              const feeTx = transactions.find((t) => t.id === tx.linkedFeeId);
+              if (feeTx) {
+                applyTxToBalance(feeTx, true);
+              }
+            }
+
+            // If this is a fee transaction being deleted alone, unlink from parent
+            if (tx.linkedParentId) {
+              const parentTx = transactions.find((t) => t.id === tx.linkedParentId);
+              if (parentTx) {
+                parentTx.linkedFeeId = null;
+                parentTx.adminFee = 0;
+              }
+            }
+
             if (tx.savingsPoolId) {
               const pool = savingsPools.find((p) => p.id === tx.savingsPoolId);
               if (pool) {
@@ -4207,7 +4788,7 @@
                 }
               }
             }
-            transactions = transactions.filter((t) => t.id !== id);
+            transactions = transactions.filter((t) => t.id !== id && t.id !== tx.linkedFeeId);
             saveData();
             renderAll();
             showToast('Transaction deleted & balances matched', 'info');
@@ -4525,11 +5106,13 @@
         const headers = [
           'Date',
           'Type',
+          'Expense Sub-Type',
           'Description',
           'Category',
           'Account (Source)',
           'Account (Destination)',
           'Amount',
+          'Admin Fee',
           'Currency',
           'Exchange Rate',
           'Target Amount',
@@ -4545,6 +5128,18 @@
                 : t.type === 'TRANSFER'
                   ? 'Transfer'
                   : 'Cross-Currency Transfer';
+
+          let subTypeName = '';
+          if (t.type === 'EXPENSE') {
+            subTypeName =
+              t.subType === 'TRANSFER'
+                ? 'Transfer Expense'
+                : t.subType === 'TOPUP'
+                  ? 'Top-Up E-Wallet Expense'
+                  : t.isAutoFee
+                    ? 'Bank Admin Fee'
+                    : 'Normal Expense';
+          }
 
           let fromAccName = '';
           let toAccName = '';
@@ -4562,11 +5157,13 @@
           return [
             escapeCSV(t.date),
             escapeCSV(typeName),
+            escapeCSV(subTypeName),
             escapeCSV(t.description || ''),
             escapeCSV(t.category || ''),
             escapeCSV(fromAccName),
             escapeCSV(toAccName),
             escapeCSV(t.amount !== undefined ? t.amount : (t.sourceAmount || 0)),
+            escapeCSV(t.adminFee || ''),
             escapeCSV(t.currency || (t.sourceCurrency || 'IDR')),
             escapeCSV(t.exchangeRate || ''),
             escapeCSV(t.targetAmount !== undefined ? t.targetAmount : ''),
@@ -4649,19 +5246,19 @@
 
       function resetDemoDataPrompt() {
         openConfirmModal(
-          'Reset to Demo Data',
-          'This will replace your current data with the default sample accounts, categories, savings goals, and transactions for IDR and USD. Are you sure?',
+          'Reset to Clean Slate',
+          'This will reset your accounts to zero balances ($0 / Rp 0), clear all transaction history, and reset savings pools saved amounts to 0. Are you sure?',
           () => {
-            accounts = JSON.parse(JSON.stringify(INITIAL_ACCOUNTS));
-            transactions = JSON.parse(JSON.stringify(INITIAL_TRANSACTIONS));
+            accounts = getInitialCleanAccounts();
+            transactions = [];
             categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
-            savingsPools = JSON.parse(JSON.stringify(INITIAL_SAVINGS_POOLS));
+            savingsPools = getInitialCleanSavingsPools();
             settings = { ...DEFAULT_SETTINGS };
             saveData();
             updateCurrencyViewButtons();
             renderAll();
             closeSettingsModal();
-            showToast('Reset to demo dataset completed', 'success');
+            showToast('Reset to clean initial state completed', 'success');
           }
         );
       }
@@ -6790,6 +7387,125 @@
         }
       });
 
+      // Gatekeeper UI View Controllers
+      function showGatekeeperLoading(title, desc) {
+        const loadingState = document.getElementById('gatekeeper-loading-state');
+        const actionsContainer = document.getElementById('gatekeeper-actions-container');
+        const titleEl = document.getElementById('gatekeeper-status-title');
+        const descEl = document.getElementById('gatekeeper-status-desc');
+        if (loadingState) loadingState.classList.remove('hidden');
+        if (actionsContainer) actionsContainer.classList.add('hidden');
+        if (titleEl && title) titleEl.textContent = title;
+        if (descEl && desc) descEl.textContent = desc;
+      }
+
+      function showGatekeeperScreen() {
+        const gatekeeper = document.getElementById('auth-gatekeeper-screen');
+        const shell = document.getElementById('main-app-shell');
+        const loadingState = document.getElementById('gatekeeper-loading-state');
+        const actionsContainer = document.getElementById('gatekeeper-actions-container');
+
+        if (gatekeeper) gatekeeper.classList.remove('hidden');
+        if (shell) shell.classList.add('hidden');
+        if (loadingState) loadingState.classList.add('hidden');
+        if (actionsContainer) actionsContainer.classList.remove('hidden');
+
+        if (typeof closePurpleDrawer === 'function') closePurpleDrawer();
+      }
+
+      function showMainDashboard() {
+        const gatekeeper = document.getElementById('auth-gatekeeper-screen');
+        const shell = document.getElementById('main-app-shell');
+        if (gatekeeper) gatekeeper.classList.add('hidden');
+        if (shell) shell.classList.remove('hidden');
+      }
+
+      // Explicit "Save & Apply" Persistence System
+      async function handleManualSaveAndApply() {
+        if (!currentUser || !currentUser.uid || !window.FirebaseEngine) {
+          showToast('Please sign in with Google first to save to cloud.', 'error');
+          return;
+        }
+
+        const saveBtn = document.getElementById('header-save-apply-btn');
+        const originalHtml = saveBtn ? saveBtn.innerHTML : '';
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = `
+            <svg class="w-3.5 h-3.5 animate-spin shrink-0" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+            <span>Saving…</span>
+          `;
+        }
+
+        try {
+          updateSyncUI('SYNCING');
+
+          // 1. Immediately update localStorage as an offline mirror
+          localStorage.setItem(STORAGE_KEY_UNIFIED, JSON.stringify({
+            accounts,
+            transactions,
+            savingsPools,
+            categories,
+            settings,
+            currentWorkspace,
+            updatedAt: new Date().toISOString(),
+          }));
+
+          // 2. Immediately write full current state directly to doc(db, 'users', user.uid)
+          const payload = {
+            userId: currentUser.uid,
+            userEmail: currentUser.email || '',
+            accounts,
+            transactions,
+            categories,
+            savingsPools,
+            settings,
+            updatedAt: new Date().toISOString(),
+            updatedBy: getDeviceId(),
+            deviceName: getDeviceName(),
+            clientTimestamp: Date.now(),
+            version: 2,
+          };
+
+          await window.FirebaseEngine.saveUserData(currentUser.uid, payload);
+          lastSyncedDate = new Date();
+          updateSyncUI('CONNECTED', 'Activity successfully saved & locked to cloud');
+
+          // 3. Displays temporary success toast/badge: "✓ Activity successfully saved & locked to cloud!"
+          showToast('✓ Activity successfully saved & locked to cloud!', 'success');
+
+          if (saveBtn) {
+            saveBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+            saveBtn.classList.add('bg-emerald-500');
+            saveBtn.innerHTML = `
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Saved & Locked!</span>
+            `;
+            setTimeout(() => {
+              if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.classList.remove('bg-emerald-500');
+                saveBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                saveBtn.innerHTML = originalHtml;
+              }
+            }, 2500);
+          }
+        } catch (err) {
+          console.error('Save & Apply failed:', err);
+          updateSyncUI('ERROR', err.message);
+          showToast(`Save & Apply failed: ${err.message}`, 'error');
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalHtml;
+          }
+        }
+      }
+
       // Google Sign-In Action
       async function handleGoogleSignIn() {
         if (!window.FirebaseEngine) {
@@ -6804,11 +7520,15 @@
         }
 
         try {
+          showGatekeeperLoading('Opening Google Sign-In...', 'Please select your Google Account in the sign-in window');
           showToast('Opening Google Sign-In...', 'info');
           await window.FirebaseEngine.signInWithGoogle();
         } catch (err) {
           console.error('Google Sign-In failed:', err);
           showToast(err.message || 'Google Sign-In failed', 'error');
+          if (!currentUser) {
+            showGatekeeperScreen();
+          }
         }
       }
 
@@ -6822,8 +7542,10 @@
           }
           await window.FirebaseEngine.signOutUser();
           currentUser = null;
+          hasCheckedInitialData = false;
           updateAuthUI(null);
-          showToast('Signed out of Google Account. Using local offline storage.', 'info');
+          showGatekeeperScreen();
+          showToast('Signed out of Google Account.', 'info');
         } catch (err) {
           console.error('Google Sign-Out failed:', err);
           showToast('Failed to sign out', 'error');
@@ -7012,7 +7734,7 @@
       }
 
       function writeStateToFirestore(immediate = false) {
-        if (!currentUser || !currentUser.uid || !window.FirebaseEngine || isRemoteUpdating) return;
+        if (!currentUser || !currentUser.uid || !window.FirebaseEngine || isRemoteUpdating || !hasCheckedInitialData) return;
 
         const executeWrite = async () => {
           try {
@@ -7036,7 +7758,7 @@
             lastSyncedDate = new Date();
             updateSyncUI('CONNECTED', 'All changes live in Firestore');
           } catch (err) {
-            console.error('Failed to write update to Firestore doc(users/' + currentUser.uid + '):', err);
+            console.error('Failed to write update to Firestore doc(users/' + currentUser.uid + '/data):', err);
             updateSyncUI('ERROR', err.message || 'Write failed');
             showToast(`Firestore write failed: ${err.message}`, 'error');
           }
@@ -7047,7 +7769,7 @@
           executeWrite();
         } else {
           updateSyncUI('SYNCING');
-          cloudWriteDebounceTimer = setTimeout(executeWrite, 100);
+          cloudWriteDebounceTimer = setTimeout(executeWrite, 250);
         }
       }
 
@@ -7081,6 +7803,18 @@
             if (Array.isArray(remote.savingsPools)) savingsPools = remote.savingsPools;
             if (remote.settings) settings = { ...DEFAULT_SETTINGS, ...remote.settings };
             if (remote.categories) categories = remote.categories;
+            
+            // Persist to unified localStorage
+            localStorage.setItem(STORAGE_KEY_UNIFIED, JSON.stringify({
+              accounts,
+              transactions,
+              savingsPools,
+              categories,
+              settings,
+              currentWorkspace,
+              updatedAt: new Date().toISOString(),
+            }));
+
             renderAll();
             lastSyncedDate = new Date();
             updateSyncUI('CONNECTED', 'Pulled freshest data from Firestore');
@@ -7129,8 +7863,13 @@
 
         window.addEventListener('firebase-engine-ready', onReady, { once: true });
 
-        // Safety timeout after 5 seconds
-        setTimeout(() => clearInterval(checkEngineInterval), 5000);
+        // Safety timeout after 3.5 seconds
+        setTimeout(() => {
+          clearInterval(checkEngineInterval);
+          if (!hasInitialized && !currentUser) {
+            showGatekeeperScreen();
+          }
+        }, 3500);
 
         function setupAuthListener() {
           window.FirebaseEngine.testConnection();
@@ -7139,74 +7878,121 @@
             if (user) {
               currentUser = user;
               updateAuthUI(user);
-              updateSyncUI('CONNECTING', `Connecting live document users/${user.uid}...`);
+              showGatekeeperLoading('Retrieving your cloud ledger…', `Fetching records from users/${user.uid}/data`);
+              updateSyncUI('CONNECTING', `Connecting to cloud document users/${user.uid}/data...`);
 
               if (currentUserDocUnsubscribe) {
                 currentUserDocUnsubscribe();
                 currentUserDocUnsubscribe = null;
               }
 
-              let hasCheckedInitialData = false;
+              hasCheckedInitialData = false;
 
-              // Subscribe to Firestore live document users/${user.uid} using onSnapshot
+              // Step 1: Pre-fetch remote Firestore document to perform robust deep merge BEFORE setting up listeners or saving
+              try {
+                const remote = await window.FirebaseEngine.getUserData(user.uid);
+                
+                // Deep merge remote online data with local state.
+                // Anti-Reset Safeguard: Guarantees existing online data is NEVER overwritten by an empty or uninitialized local state!
+                const merged = deepMergeOnlineAndLocal(remote, {
+                  accounts,
+                  transactions,
+                  savingsPools,
+                  categories,
+                  settings,
+                });
+
+                isRemoteUpdating = true;
+                try {
+                  accounts = merged.accounts;
+                  transactions = merged.transactions;
+                  savingsPools = merged.savingsPools;
+                  categories = merged.categories;
+                  settings = merged.settings;
+
+                  // Save to unified consistent localStorage key
+                  localStorage.setItem(STORAGE_KEY_UNIFIED, JSON.stringify({
+                    accounts,
+                    transactions,
+                    savingsPools,
+                    categories,
+                    settings,
+                    currentWorkspace,
+                    updatedAt: new Date().toISOString(),
+                  }));
+
+                  renderAll();
+                } finally {
+                  isRemoteUpdating = false;
+                }
+
+                // If remote document was completely empty (brand new user in Firestore):
+                if (!remote || !Array.isArray(remote.accounts) || remote.accounts.length === 0) {
+                  // Upload clean zero initial state to user's Firestore document users/{userId}/data/finance
+                  const initialPayload = {
+                    userId: user.uid,
+                    userEmail: user.email || '',
+                    accounts: accounts,
+                    transactions: transactions, // empty list []
+                    savingsPools: savingsPools, // currentAmount: 0
+                    settings: settings,
+                    categories: categories,
+                    updatedAt: new Date().toISOString(),
+                    updatedBy: getDeviceId(),
+                    deviceName: getDeviceName(),
+                    clientTimestamp: Date.now(),
+                    version: 2,
+                  };
+                  await window.FirebaseEngine.saveUserData(user.uid, initialPayload);
+                  showToast(`Connected cloud storage for ${user.displayName || user.email}!`, 'success');
+                } else if (merged.hasOfflineChangesToPush) {
+                  // If local device had new offline records created prior to login, push merged result to cloud
+                  const updatedPayload = {
+                    userId: user.uid,
+                    userEmail: user.email || '',
+                    accounts: accounts,
+                    transactions: transactions,
+                    savingsPools: savingsPools,
+                    settings: settings,
+                    categories: categories,
+                    updatedAt: new Date().toISOString(),
+                    updatedBy: getDeviceId(),
+                    deviceName: getDeviceName(),
+                    clientTimestamp: Date.now(),
+                    version: 2,
+                  };
+                  await window.FirebaseEngine.saveUserData(user.uid, updatedPayload);
+                  showToast(`Merged offline changes with cloud ledger for ${user.displayName || user.email}!`, 'success');
+                } else {
+                  showToast(`Synchronized online records for ${user.displayName || user.email}!`, 'success');
+                }
+
+                hasCheckedInitialData = true;
+                lastSyncedDate = new Date();
+                updateSyncUI('CONNECTED', `Live sync active for ${user.email}`);
+              } catch (initialErr) {
+                console.error('Initial cloud data fetch/merge error:', initialErr);
+                hasCheckedInitialData = true;
+                updateSyncUI('CONNECTED', `Connected as ${user.email}`);
+              } finally {
+                // Reveal main dashboard only after cloud ledger records are retrieved and loaded
+                showMainDashboard();
+              }
+
+              // Step 2: Subscribe to live real-time onSnapshot changes
               currentUserDocUnsubscribe = window.FirebaseEngine.subscribeToUserData(
                 user.uid,
-                async (remote) => {
-                  // If Firestore has no data for the user yet, upload the initial template data to Firestore once on first login
-                  if (!hasCheckedInitialData) {
-                    hasCheckedInitialData = true;
-                    if (!remote || !Array.isArray(remote.accounts) || remote.accounts.length === 0) {
-                      isRemoteUpdating = true;
-                      try {
-                        updateSyncUI('SYNCING', 'Uploading initial template data to Firestore...');
-                        
-                        accounts = [...INITIAL_ACCOUNTS];
-                        transactions = [...INITIAL_TRANSACTIONS];
-                        savingsPools = JSON.parse(JSON.stringify(INITIAL_SAVINGS_POOLS));
-                        settings = { ...DEFAULT_SETTINGS };
-                        categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
-
-                        renderAll();
-
-                        const templatePayload = {
-                          userId: user.uid,
-                          userEmail: user.email || '',
-                          accounts: [...INITIAL_ACCOUNTS],
-                          transactions: [...INITIAL_TRANSACTIONS],
-                          savingsPools: JSON.parse(JSON.stringify(INITIAL_SAVINGS_POOLS)),
-                          settings: { ...DEFAULT_SETTINGS },
-                          categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
-                          updatedAt: new Date().toISOString(),
-                          updatedBy: getDeviceId(),
-                          deviceName: getDeviceName(),
-                          clientTimestamp: Date.now(),
-                          version: 2,
-                        };
-
-                        await window.FirebaseEngine.saveUserData(user.uid, templatePayload);
-                        lastSyncedDate = new Date();
-                        updateSyncUI('CONNECTED', `Live sync active for ${user.email}`);
-                        showToast(`Uploaded initial template data to Cloud Firestore for ${user.displayName || user.email}!`, 'success');
-                      } catch (err) {
-                        console.error('Failed to upload initial template to Firestore:', err);
-                        updateSyncUI('ERROR', err.message);
-                      } finally {
-                        isRemoteUpdating = false;
-                      }
-                      return;
-                    }
-                  }
-
+                (remote) => {
                   if (!remote) return;
 
-                  // Check if originated from this device client write
+                  // Skip if update was initiated by this client
                   if (remote.updatedBy === getDeviceId()) {
                     lastSyncedDate = new Date();
                     updateSyncUI('CONNECTED', 'All changes in sync with cloud');
                     return;
                   }
 
-                  // Apply remote change from another device via live onSnapshot
+                  // Incoming real-time update from another device
                   isRemoteUpdating = true;
                   try {
                     if (Array.isArray(remote.accounts)) accounts = remote.accounts;
@@ -7218,6 +8004,17 @@
                     if (remote.categories && typeof remote.categories === 'object') {
                       categories = remote.categories;
                     }
+
+                    // Save to local storage
+                    localStorage.setItem(STORAGE_KEY_UNIFIED, JSON.stringify({
+                      accounts,
+                      transactions,
+                      savingsPools,
+                      categories,
+                      settings,
+                      currentWorkspace,
+                      updatedAt: new Date().toISOString(),
+                    }));
 
                     renderAll();
 
@@ -7237,18 +8034,17 @@
                   showToast(`Cloud Sync Error: ${syncErrorMsg}`, 'error');
                 }
               );
-
-              lastSyncedDate = new Date();
-              updateSyncUI('CONNECTED', `Live sync active for ${user.email}`);
             } else {
-              // User is logged out
+              // User is logged out / no active session
               currentUser = null;
+              hasCheckedInitialData = false;
               if (currentUserDocUnsubscribe) {
                 currentUserDocUnsubscribe();
                 currentUserDocUnsubscribe = null;
               }
               updateAuthUI(null);
               updateSyncUI('LOCAL', 'Offline Local Storage');
+              showGatekeeperScreen();
               loadData();
               renderAll();
             }

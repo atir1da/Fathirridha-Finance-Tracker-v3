@@ -1,13 +1,67 @@
 {
   "entities": {
+    "SeafarerProfile": {
+      "title": "SeafarerProfile",
+      "description": "Mandatory onboard maritime seafarer profile with credentials, department, and rank",
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "description": "Full legal name of the seafarer"
+        },
+        "cdcNumber": {
+          "type": "string",
+          "description": "Continuous Discharge Certificate / Seaman's Book identification number"
+        },
+        "department": {
+          "type": "string",
+          "enum": ["Deck", "Engine", "Catering"],
+          "description": "Shipboard operational department"
+        },
+        "rank": {
+          "type": "string",
+          "description": "Designated maritime rank onboard"
+        },
+        "nationality": {
+          "type": "string",
+          "description": "Country of origin or flag state citizenship"
+        },
+        "vesselName": {
+          "type": "string",
+          "description": "Assigned merchant or offshore vessel name"
+        },
+        "onDuty": {
+          "type": "boolean",
+          "description": "Active watch or duty station status"
+        },
+        "watchShift": {
+          "type": "string",
+          "description": "Assigned navigational or engine room watchkeeping shift"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of profile update"
+        }
+      },
+      "required": ["fullName", "cdcNumber", "department", "rank", "nationality"]
+    },
     "UserData": {
       "title": "UserData",
-      "description": "User financial tracker state containing accounts, transactions, savings pools, categories, and settings",
+      "description": "User account document containing seafarer profile, ledger, accounts, crew records, and watchkeeping entries",
       "type": "object",
       "properties": {
         "userId": {
           "type": "string",
           "description": "Unique Firebase Authentication UID of the owner"
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "Registered email address"
+        },
+        "seafarerProfile": {
+          "$ref": "SeafarerProfile",
+          "description": "Mandatory onboard seafarer identification and rank profile"
         },
         "accounts": {
           "type": "array",
@@ -29,6 +83,14 @@
           "type": "object",
           "description": "Application settings including exchange rates, currency views, and theme"
         },
+        "crewMembers": {
+          "type": "array",
+          "description": "Shipboard crew muster and roster records"
+        },
+        "watchSchedule": {
+          "type": "array",
+          "description": "Bridge and Engine room watchkeeping shift log"
+        },
         "updatedAt": {
           "type": "string",
           "format": "date-time",
@@ -47,13 +109,13 @@
           "description": "Client millisecond epoch timestamp"
         }
       },
-      "required": ["userId", "accounts", "transactions", "savingsPools", "categories", "settings"]
+      "required": ["userId"]
     }
   },
   "firestore": {
     "/users/{userId}": {
       "schema": "UserData",
-      "description": "User financial root state document under users/{userId}"
+      "description": "User profile and root ledger state under users/{userId}"
     },
     "/users/{userId}/data/{docId}": {
       "schema": "UserData",
